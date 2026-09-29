@@ -6,12 +6,6 @@
 	objectVersion = 110;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		BF1DB868306A62E600ADF741 /* FSRSStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF1DB867306A62E600ADF741 /* FSRSStrategy.swift */; };
-		BF1DB86A306A65B700ADF741 /* AlgosHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF1DB869306A65B700ADF741 /* AlgosHomeView.swift */; };
-		BF1DB86E306A660800ADF741 /* TimeScreenStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF1DB86D306A660800ADF741 /* TimeScreenStrategy.swift */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		BF1DB844306A4F0500ADF741 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -33,9 +27,6 @@
 		BF1DB834306A4F0400ADF741 /* Algorithothm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Algorithothm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF1DB843306A4F0500ADF741 /* AlgorithothmTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlgorithothmTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF1DB84D306A4F0500ADF741 /* AlgorithothmUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlgorithothmUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		BF1DB867306A62E600ADF741 /* FSRSStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FSRSStrategy.swift; sourceTree = "<group>"; };
-		BF1DB869306A65B700ADF741 /* AlgosHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgosHomeView.swift; sourceTree = "<group>"; };
-		BF1DB86D306A660800ADF741 /* TimeScreenStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeScreenStrategy.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -59,9 +50,19 @@
 			path = Repository;
 			sourceTree = "<group>";
 		};
-		BF1DB864306A5EA800ADF741 /* AlgosViewModel */ = {
+		BFA9AD0F306B0F09000D6721 /* AlgosStartegy */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AlgosStartegy;
+			sourceTree = "<group>";
+		};
+		BFA9AD13306B0F17000D6721 /* AlgosViewModel */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = AlgosViewModel;
+			sourceTree = "<group>";
+		};
+		BFA9AD18306B0F52000D6721 /* AlgosView */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AlgosView;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -88,9 +89,9 @@
 		BF1DB82B306A4F0400ADF741 = {
 			isa = PBXGroup;
 			children = (
-				BF1DB866306A62BE00ADF741 /* AlgosStartegy */,
-				BF1DB864306A5EA800ADF741 /* AlgosViewModel */,
-				BF1DB865306A62A600ADF741 /* AlgosView */,
+				BFA9AD18306B0F52000D6721 /* AlgosView */,
+				BFA9AD13306B0F17000D6721 /* AlgosViewModel */,
+				BFA9AD0F306B0F09000D6721 /* AlgosStartegy */,
 				BF1DB863306A5E9C00ADF741 /* Repository */,
 				BF1DB836306A4F0400ADF741 /* Algorithothm */,
 				BF1DB846306A4F0500ADF741 /* AlgorithothmTests */,
@@ -109,23 +110,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BF1DB865306A62A600ADF741 /* AlgosView */ = {
-			isa = PBXGroup;
-			children = (
-				BF1DB869306A65B700ADF741 /* AlgosHomeView.swift */,
-			);
-			path = AlgosView;
-			sourceTree = "<group>";
-		};
-		BF1DB866306A62BE00ADF741 /* AlgosStartegy */ = {
-			isa = PBXGroup;
-			children = (
-				BF1DB867306A62E600ADF741 /* FSRSStrategy.swift */,
-				BF1DB86D306A660800ADF741 /* TimeScreenStrategy.swift */,
-			);
-			path = AlgosStartegy;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -142,7 +126,9 @@
 			fileSystemSynchronizedGroups = (
 				BF1DB836306A4F0400ADF741 /* Algorithothm */,
 				BF1DB863306A5E9C00ADF741 /* Repository */,
-				BF1DB864306A5EA800ADF741 /* AlgosViewModel */,
+				BFA9AD0F306B0F09000D6721 /* AlgosStartegy */,
+				BFA9AD13306B0F17000D6721 /* AlgosViewModel */,
+				BFA9AD18306B0F52000D6721 /* AlgosView */,
 			);
 			name = Algorithothm;
 			productName = Algorithothm;
@@ -257,9 +243,6 @@
 		BF1DB830306A4F0400ADF741 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
-				BF1DB86A306A65B700ADF741 /* AlgosHomeView.swift in Sources */,
-				BF1DB86E306A660800ADF741 /* TimeScreenStrategy.swift in Sources */,
-				BF1DB868306A62E600ADF741 /* FSRSStrategy.swift in Sources */,
 			);
 		};
 		BF1DB83F306A4F0500ADF741 /* Sources */ = {

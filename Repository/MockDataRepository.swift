@@ -6,3 +6,29 @@
 //
 
 import Foundation
+
+enum Dificulties{
+    case Easy
+    case Medium
+    case Hard
+}
+
+enum TypeOfCard{
+    case ArchitechtureCard
+    case BlocksCard
+    case MultipleAnsweCard
+}
+
+struct flashcard {
+    var Dificulty: Dificulties
+    var CardType: TypeOfCard
+    var prompt: String
+}
+
+
+//MARK: MOCK BY LENGUAGE
+
+enum codingLenguag{
+    case swift
+    case java
+}
