@@ -6,6 +6,10 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		BFF8B098306C2F7900B7DFA8 /* FSRS in Frameworks */ = {isa = PBXBuildFile; productRef = BFF8B097306C2F7900B7DFA8 /* FSRS */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		BF1DB844306A4F0500ADF741 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -50,9 +54,9 @@
 			path = Repository;
 			sourceTree = "<group>";
 		};
-		BFA9AD0F306B0F09000D6721 /* AlgosStartegy */ = {
+		BFA9AD0F306B0F09000D6721 /* AlgosStartegy-Interactions */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = AlgosStartegy;
+			path = "AlgosStartegy-Interactions";
 			sourceTree = "<group>";
 		};
 		BFA9AD13306B0F17000D6721 /* AlgosViewModel */ = {
@@ -71,6 +75,7 @@
 		BF1DB831306A4F0400ADF741 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				BFF8B098306C2F7900B7DFA8 /* FSRS in Frameworks */,
 			);
 		};
 		BF1DB840306A4F0500ADF741 /* Frameworks */ = {
@@ -91,7 +96,7 @@
 			children = (
 				BFA9AD18306B0F52000D6721 /* AlgosView */,
 				BFA9AD13306B0F17000D6721 /* AlgosViewModel */,
-				BFA9AD0F306B0F09000D6721 /* AlgosStartegy */,
+				BFA9AD0F306B0F09000D6721 /* AlgosStartegy-Interactions */,
 				BF1DB863306A5E9C00ADF741 /* Repository */,
 				BF1DB836306A4F0400ADF741 /* Algorithothm */,
 				BF1DB846306A4F0500ADF741 /* AlgorithothmTests */,
@@ -126,11 +131,14 @@
 			fileSystemSynchronizedGroups = (
 				BF1DB836306A4F0400ADF741 /* Algorithothm */,
 				BF1DB863306A5E9C00ADF741 /* Repository */,
-				BFA9AD0F306B0F09000D6721 /* AlgosStartegy */,
+				BFA9AD0F306B0F09000D6721 /* AlgosStartegy-Interactions */,
 				BFA9AD13306B0F17000D6721 /* AlgosViewModel */,
 				BFA9AD18306B0F52000D6721 /* AlgosView */,
 			);
 			name = Algorithothm;
+			packageProductDependencies = (
+				BFF8B097306C2F7900B7DFA8 /* FSRS */,
+			);
 			productName = Algorithothm;
 			productReference = BF1DB834306A4F0400ADF741 /* Algorithothm.app */;
 			productType = "com.apple.product-type.application";
@@ -209,6 +217,9 @@
 			);
 			mainGroup = BF1DB82B306A4F0400ADF741;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				BFF8B096306C2F7900B7DFA8 /* XCRemoteSwiftPackageReference "swift-fsrs" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BF1DB835306A4F0400ADF741 /* Products */;
 			projectDirPath = "";
@@ -613,6 +624,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BFF8B096306C2F7900B7DFA8 /* XCRemoteSwiftPackageReference "swift-fsrs" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/open-spaced-repetition/swift-fsrs.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BFF8B097306C2F7900B7DFA8 /* FSRS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BFF8B096306C2F7900B7DFA8 /* XCRemoteSwiftPackageReference "swift-fsrs" */;
+			productName = FSRS;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BF1DB82C306A4F0400ADF741 /* Project object */;
 	validationLevel = 1;
