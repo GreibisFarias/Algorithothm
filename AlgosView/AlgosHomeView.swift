@@ -11,13 +11,7 @@ struct AlgosHomeView: View {
     var body: some View {
         
         NavigationStack{
-            HStack{
-                NavigationLink{
-                    DragAndHoldView()
-                }label: {
-                    HomeButtons()
-                }
-            }
+            HomeButtons()
         }
     }
 }

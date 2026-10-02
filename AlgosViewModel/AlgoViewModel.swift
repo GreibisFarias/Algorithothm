@@ -11,6 +11,7 @@ import SwiftUI
 
 class GetDataArchMock: ObservableObject{
     @Published var archmmv: [architectureModules]? = nil
+    
     let dataSource = ArchDataSource()
     
     init () {
@@ -25,7 +26,10 @@ class GetDataArchMock: ObservableObject{
 class ValidationOfArch: ObservableObject{
     @Published var errorMessage: String? = nil
     @Published var showErrorAlert = false
+    @Published var Congrats: String? = nil
+    @Published var showCongratsAlert = false
     @Published var MockData = GetDataArchMock()
+    
     
    public func validateAndConnect(from sourceID: UUID, at touchLocation: CGPoint) {
        guard var modules = MockData.archmmv else { return }
@@ -46,12 +50,14 @@ class ValidationOfArch: ObservableObject{
         // 2. Si soltaste el dedo dentro de algún cuadrado
         if let targetNode = touchedNode, targetNode.id != sourceID {
             
-            // CORRECCIÓN CRÍTICA: Desempaquetado correcto del opcional Bool
-            let isValidConnection = sourceNode?.targetId?.contains(targetNode.id ?? UUID()) ?? false
+            //Desempaquetado correcto del opcional Bool
+            let isValidConnection = sourceNode?.targetId?.contains(targetNode.id) ?? false
                         
                         if isValidConnection {
                             // ¡CORRECTO! Guarda la conexión en la lista
                             modules[sourceIndex].moduleMustBeConnected = targetNode.id
+                            self.Congrats = "Well Done Dude"
+                            self.showCongratsAlert = true
                         } else {
                             // ¡INCORRECTO! Resetea y muestra error
                             modules[sourceIndex].moduleMustBeConnected = nil
@@ -66,3 +72,4 @@ class ValidationOfArch: ObservableObject{
        MockData.archmmv = modules
     }
 }
+

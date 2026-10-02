@@ -14,7 +14,7 @@ enum Dificulties{
 }
 
 enum TypeOfCard{
-    case ArchitechtureCard
+    case ArchitechtureCard(architectureModules)
     case BlocksCard
     case MultipleAnsweCard
 }

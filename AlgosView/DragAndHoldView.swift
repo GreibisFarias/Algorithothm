@@ -45,5 +45,7 @@ struct DragAndHoldView: View {
 
 
 #Preview {
-    DragAndHoldView()
+    NavigationStack{
+        DragAndHoldView()
+    }
 }

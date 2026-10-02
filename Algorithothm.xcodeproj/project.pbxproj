@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		BFF8B098306C2F7900B7DFA8 /* FSRS in Frameworks */ = {isa = PBXBuildFile; productRef = BFF8B097306C2F7900B7DFA8 /* FSRS */; };
-		BFF8B0D4306F382500B7DFA8 /* HomeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF8B0D3306F382500B7DFA8 /* HomeButtons.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,7 +31,6 @@
 		BF1DB834306A4F0400ADF741 /* Algorithothm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Algorithothm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF1DB843306A4F0500ADF741 /* AlgorithothmTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlgorithothmTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF1DB84D306A4F0500ADF741 /* AlgorithothmUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlgorithothmUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		BFF8B0D3306F382500B7DFA8 /* HomeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeButtons.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -71,6 +69,11 @@
 			path = AlgosView;
 			sourceTree = "<group>";
 		};
+		BFF8B174307032B100B7DFA8 /* ExtraTools */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ExtraTools;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,11 +99,11 @@
 		BF1DB82B306A4F0400ADF741 = {
 			isa = PBXGroup;
 			children = (
-				BFF8B0D3306F382500B7DFA8 /* HomeButtons.swift */,
 				BFA9AD18306B0F52000D6721 /* AlgosView */,
 				BFA9AD13306B0F17000D6721 /* AlgosViewModel */,
 				BFA9AD0F306B0F09000D6721 /* AlgosStartegy-Interactions */,
 				BF1DB863306A5E9C00ADF741 /* Repository */,
+				BFF8B174307032B100B7DFA8 /* ExtraTools */,
 				BF1DB836306A4F0400ADF741 /* Algorithothm */,
 				BF1DB846306A4F0500ADF741 /* AlgorithothmTests */,
 				BF1DB850306A4F0500ADF741 /* AlgorithothmUITests */,
@@ -137,6 +140,7 @@
 				BFA9AD0F306B0F09000D6721 /* AlgosStartegy-Interactions */,
 				BFA9AD13306B0F17000D6721 /* AlgosViewModel */,
 				BFA9AD18306B0F52000D6721 /* AlgosView */,
+				BFF8B174307032B100B7DFA8 /* ExtraTools */,
 			);
 			name = Algorithothm;
 			packageProductDependencies = (
@@ -257,7 +261,6 @@
 		BF1DB830306A4F0400ADF741 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
-				BFF8B0D4306F382500B7DFA8 /* HomeButtons.swift in Sources */,
 			);
 		};
 		BF1DB83F306A4F0500ADF741 /* Sources */ = {

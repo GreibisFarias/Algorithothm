@@ -20,32 +20,30 @@ struct architectureModules: Identifiable{
 
 
 class ArchDataSource {
-    var viewModule: architectureModules
-    var viewModelModule: architectureModules
-    var modelModule: architectureModules
+    
+    var viewModule: architectureModules = architectureModules(
+        position: CGPoint(x: 100, y: 180),
+        name: "View",
+        size: CGSize(width: 150, height: 100)
+    )
+    var viewModelModule: architectureModules  = architectureModules(
+        position: CGPoint(x: 250, y: 380),
+        name: "ViewModel",
+        size: CGSize(width: 150, height: 100)
+    )
+    var modelModule: architectureModules  = architectureModules(
+        position: CGPoint(x: 100, y: 580),
+        name: "Model",
+        size: CGSize(width: 150, height: 100)
+    )
     
     lazy var mvvm: [architectureModules] = [viewModule, viewModelModule, modelModule]
     
     init() {
-        // 2. Coordenadas distribuidas por la pantalla sin superposición
-        self.viewModule = architectureModules(
-            position: CGPoint(x: 100, y: 180),
-            name: "View",
-            size: CGSize(width: 150, height: 100)
-        )
-        
-        self.viewModelModule = architectureModules(
-            position: CGPoint(x: 250, y: 380),
-            name: "ViewModel",
-            size: CGSize(width: 150, height: 100)
-        )
-        
-        self.modelModule = architectureModules(
-            position: CGPoint(x: 100, y: 580),
-            name: "Model",
-            size: CGSize(width: 150, height: 100)
-        )
-        
+        createRelations()
+    }
+    
+    func createRelations() {
         // 3. Reglas de validación: View -> ViewModel -> Model
         self.viewModule.targetId = [self.viewModelModule.id]
         self.viewModelModule.targetId = [self.modelModule.id]
@@ -79,3 +77,12 @@ class ArrowDrawning{
     }
     
 }
+
+enum TypeExercise{
+    case arch(architectureModules)
+}
+
+
+
+
+
