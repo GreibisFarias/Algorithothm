@@ -14,21 +14,24 @@ enum Dificulties{
 }
 
 enum TypeOfCard{
-    case ArchitechtureCard
+    case ArchitectureCard
     case BlocksCard
-    case MultipleAnsweCard
+    case MultipleAnswerCard
 }
 
 struct flashcard {
-    var Dificulty: Dificulties
-    var CardType: TypeOfCard
+    var difficulty: Dificulties
+    var cardType: TypeOfCard
     var prompt: String
 }
 
 
-//MARK: MOCK BY LENGUAGE
+//MARK: MOCK BY LANGUAGE
 
-enum codingLenguag{
+enum codingLanguage {
     case swift
     case java
 }
+
+
+
