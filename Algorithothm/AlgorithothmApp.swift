@@ -13,7 +13,7 @@ struct AlgorithothmApp: App {
   
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AlgosHomeView()
         }
     }
 }
