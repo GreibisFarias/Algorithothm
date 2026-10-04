@@ -13,7 +13,7 @@ import Combine
 struct DragAndHoldTecnicView: View {
     var vm = GetDataArchMock()
     var claseDrag = ArrowDrawning()
-    @StateObject var validator = ValidationOfArch()
+    @EnvironmentObject var validator: ValidationOfArch
     
     
     @State var moduleWhereArrowIs: UUID? = nil
@@ -21,7 +21,7 @@ struct DragAndHoldTecnicView: View {
     
     var body: some View {
         
-        if let modules = validator.MockData.archmmv {
+        if let modules = validator.MockData.activeArchitecture {
             ZStack {
                 // A. CANVAS DE DIBUJO DE FLECHAS
                 Canvas { context, size in
@@ -100,5 +100,7 @@ struct DragAndHoldTecnicView: View {
 }
 
 #Preview {
+    
     DragAndHoldTecnicView()
+        .environmentObject(ValidationOfArch())
 }

@@ -9,8 +9,10 @@ import Foundation
 import Combine
 import SwiftUI
 
-class GetDataArchMock: ObservableObject{
-    @Published var archmmv: [architectureModules]? = nil
+struct GetDataArchMock{
+     var archs: [[architectureModules]] = []
+     var currentCart: Int = 0
+    
     
     let dataSource = ArchDataSource()
     
@@ -18,9 +20,21 @@ class GetDataArchMock: ObservableObject{
         getExercises()
     }
     
-    func getExercises() {
-        self.archmmv = dataSource.mvvm
+    mutating func getExercises() {
+        self.archs = [dataSource.mvvm, dataSource.viper]
     }
+    
+    var activeArchitecture: [architectureModules]? {
+            get {
+                guard archs.indices.contains(currentCart) else { return nil }
+                return archs[currentCart]
+            }
+            set {
+                if let newValue = newValue, archs.indices.contains(currentCart) {
+                    archs[currentCart] = newValue
+                }
+            }
+        }
 }
 
 class ValidationOfArch: ObservableObject{
@@ -32,12 +46,12 @@ class ValidationOfArch: ObservableObject{
     
     
    public func validateAndConnect(from sourceID: UUID, at touchLocation: CGPoint) {
-       guard var modules = MockData.archmmv else { return }
-        guard let sourceIndex = MockData.archmmv?.firstIndex(where: { $0.id == sourceID }) else { return }
-        let sourceNode = MockData.archmmv?[sourceIndex]
+       guard var modules = MockData.activeArchitecture else { return }
+        guard let sourceIndex = modules.firstIndex(where: { $0.id == sourceID }) else { return }
+        let sourceNode = modules[sourceIndex]
         
         // 1. Buscar en qué cuadrado soltaste el dedo
-        let touchedNode = MockData.archmmv?.first(where: { element in
+        let touchedNode = modules.first(where: { element in
             let frame = CGRect(
                 x: element.position.x - element.size.width / 2,
                 y: element.position.y - element.size.height / 2,
@@ -51,7 +65,7 @@ class ValidationOfArch: ObservableObject{
         if let targetNode = touchedNode, targetNode.id != sourceID {
             
             //Desempaquetado correcto del opcional Bool
-            let isValidConnection = sourceNode?.targetId?.contains(targetNode.id) ?? false
+            let isValidConnection = sourceNode.targetId?.contains(targetNode.id) ?? false
                         
                         if isValidConnection {
                             // ¡CORRECTO! Guarda la conexión en la lista
@@ -69,7 +83,13 @@ class ValidationOfArch: ObservableObject{
             modules[sourceIndex].moduleMustBeConnected = nil
         }
        
-       MockData.archmmv = modules
+       MockData.activeArchitecture = modules
+    }
+    
+    func nextCard(){
+        if MockData.currentCart < MockData.archs.count{
+            MockData.currentCart += 1
+        }
     }
 }
 

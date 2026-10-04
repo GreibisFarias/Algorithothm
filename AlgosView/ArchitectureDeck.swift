@@ -8,8 +8,17 @@
 import SwiftUI
 
 struct ArchitectureDeck: View {
+    @StateObject var validition2 = ValidationOfArch()
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack{
+            VStack{
+                DragAndHoldView()
+                
+                Button("next", action: validition2.nextCard)
+            }
+            
+            .environmentObject(validition2)
+        }
     }
 }
 

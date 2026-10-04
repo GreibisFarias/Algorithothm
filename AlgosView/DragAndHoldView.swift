@@ -47,5 +47,6 @@ struct DragAndHoldView: View {
 #Preview {
     NavigationStack{
         DragAndHoldView()
+            .environmentObject(ValidationOfArch())
     }
 }

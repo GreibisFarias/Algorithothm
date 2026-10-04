@@ -38,15 +38,55 @@ class ArchDataSource {
     )
     
     lazy var mvvm: [architectureModules] = [viewModule, viewModelModule, modelModule]
+    lazy var viper: [architectureModules] = [viperViewModule, viperEntityModule, viperRouterModule, viperPresenterModule, viperInteractorModule]
     
     init() {
         createRelations()
+        createViperRelations()
     }
     
     func createRelations() {
         // 3. Reglas de validación: View -> ViewModel -> Model
         self.viewModule.targetId = [self.viewModelModule.id]
         self.viewModelModule.targetId = [self.modelModule.id]
+    }
+    
+    // VIPER
+    var viperViewModule = architectureModules(
+        position: CGPoint(x: 100, y: 100),
+        name: "View",
+        size: CGSize(width: 150, height: 100)
+    )
+    var viperPresenterModule = architectureModules(
+        position: CGPoint(x: 300, y: 100),
+        name: "Presenter",
+        size: CGSize(width: 150, height: 100)
+    )
+    var viperInteractorModule = architectureModules(
+        position: CGPoint(x: 300, y: 300),
+        name: "Interactor",
+        size: CGSize(width: 150, height: 100)
+    )
+    var viperEntityModule = architectureModules(
+        position: CGPoint(x: 300, y: 500),
+        name: "Entity",
+        size: CGSize(width: 150, height: 100)
+    )
+    var viperRouterModule = architectureModules(
+        position: CGPoint(x: 100, y: 300),
+        name: "Router",
+        size: CGSize(width: 150, height: 100)
+    )
+
+    func createViperRelations() {
+        // La View notifica eventos al Presenter
+        self.viperViewModule.targetId = [self.viperPresenterModule.id]
+        
+        // El Presenter coordina con Interactor y Router
+        self.viperPresenterModule.targetId = [self.viperInteractorModule.id, self.viperRouterModule.id]
+        
+        // El Interactor accede/manipula la Entity (modelo de negocio)
+        self.viperInteractorModule.targetId = [self.viperEntityModule.id]
     }
 }
 
