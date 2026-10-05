@@ -13,7 +13,7 @@ struct HomeButtons: View {
             VStack{
                 HStack() {
                     NavigationLink{
-                       DragAndHoldView()
+                       ArchitectureDeck()
                     }label: {
                         Rectangle()
                             .frame(width: 170, height: 190)
@@ -38,4 +38,5 @@ struct HomeButtons: View {
 
 #Preview {
     HomeButtons()
+        .environmentObject(ValidationOfArch())
 }

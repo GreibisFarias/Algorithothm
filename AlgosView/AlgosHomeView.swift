@@ -8,13 +8,18 @@
 import SwiftUI
 
 struct AlgosHomeView: View {
+    @StateObject var validator = ValidationOfArch()
+    
     var body: some View {
         
         NavigationStack{
             HomeButtons()
+                
         }
+        .environmentObject(validator)
     }
 }
 #Preview {
     AlgosHomeView()
+    
 }

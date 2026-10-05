@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct architectureModules: Identifiable{
-    var moduleMustBeConnected: UUID? = nil
+    var moduleMustBeConnected: Set<UUID> = []
     var id: UUID = UUID()
     var targetId: [UUID]? = nil
     var position: CGPoint

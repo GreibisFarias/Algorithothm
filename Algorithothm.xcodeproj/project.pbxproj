@@ -99,12 +99,12 @@
 		BF1DB82B306A4F0400ADF741 = {
 			isa = PBXGroup;
 			children = (
+				BF1DB836306A4F0400ADF741 /* Algorithothm */,
 				BFA9AD18306B0F52000D6721 /* AlgosView */,
 				BFA9AD13306B0F17000D6721 /* AlgosViewModel */,
 				BFA9AD0F306B0F09000D6721 /* AlgosStartegy-Interactions */,
 				BF1DB863306A5E9C00ADF741 /* Repository */,
 				BFF8B174307032B100B7DFA8 /* ExtraTools */,
-				BF1DB836306A4F0400ADF741 /* Algorithothm */,
 				BF1DB846306A4F0500ADF741 /* AlgorithothmTests */,
 				BF1DB850306A4F0500ADF741 /* AlgorithothmUITests */,
 				BF1DB835306A4F0400ADF741 /* Products */,

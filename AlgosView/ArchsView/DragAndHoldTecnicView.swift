@@ -33,10 +33,12 @@ struct DragAndHoldTecnicView: View {
                             targetPoint = dragPoint
                         }
                         // Si ya tiene una conexión validada guardada
-                        else if let connectedWith = node.moduleMustBeConnected,
-                                let targetNode = modules.first(where: { $0.id == connectedWith }) {
-                            targetPoint = targetNode.position
-                        }
+                       
+                        for targetId in node.moduleMustBeConnected{
+                                if let targetNode = modules.first(where: { $0.id == targetId }) {
+                                    claseDrag.drawArrow(from: node.position, to: targetNode.position, in: context)
+                                }
+                            }
                         
                         // Dibuja la flecha si hay un punto final válido
                         if let endPoint = targetPoint {
@@ -90,12 +92,14 @@ struct DragAndHoldTecnicView: View {
             } message: {
                 Text(validator.errorMessage ?? "")
             }
-        } else {
+        }
+            else {
             Text("Cargando módulos...")
                 .onAppear {
                     validator.MockData.getExercises()
                 }
         }
+
     }
 }
 

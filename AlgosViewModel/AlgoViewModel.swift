@@ -37,7 +37,7 @@ struct GetDataArchMock{
         }
 }
 
-class ValidationOfArch: ObservableObject{
+class ValidationOfArch: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var showErrorAlert = false
     @Published var Congrats: String? = nil
@@ -69,18 +69,21 @@ class ValidationOfArch: ObservableObject{
                         
                         if isValidConnection {
                             // ¡CORRECTO! Guarda la conexión en la lista
-                            modules[sourceIndex].moduleMustBeConnected = targetNode.id
+                            modules[sourceIndex].moduleMustBeConnected.insert(targetNode.id)
+                            
+                            MockData.activeArchitecture = modules
+                            
                             self.Congrats = "Well Done Dude"
                             self.showCongratsAlert = true
                         } else {
                             // ¡INCORRECTO! Resetea y muestra error
-                            modules[sourceIndex].moduleMustBeConnected = nil
+                            modules[sourceIndex].moduleMustBeConnected = []
                             self.errorMessage = "That's not the correct answer!"
                             self.showErrorAlert = true
                         }
         } else {
             // Si soltó en el espacio vacío, simplemente resetea la conexión
-            modules[sourceIndex].moduleMustBeConnected = nil
+            modules[sourceIndex].moduleMustBeConnected = []
         }
        
        MockData.activeArchitecture = modules
