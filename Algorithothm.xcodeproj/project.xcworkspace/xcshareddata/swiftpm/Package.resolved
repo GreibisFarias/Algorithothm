@@ -1,13 +1,13 @@
 {
-  "originHash" : "98e3cd3adf96b689280ec2d6e50df7347087d0fca968a1090c9fb65f467adac8",
+  "originHash" : "8afad074c048e6f6fd33a5435dbd3e00168338684fd844da740d0d418d014169",
   "pins" : [
     {
       "identity" : "swift-fsrs",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/open-spaced-repetition/swift-fsrs.git",
+      "location" : "https://github.com/4rays/swift-fsrs",
       "state" : {
-        "revision" : "129e4dc4e99625ee2dd2ee627fab866f2993e3d7",
-        "version" : "5.0.0"
+        "revision" : "6779d34a76c90d8a9be9aa13724365d951f6f819",
+        "version" : "0.9.2"
       }
     }
   ],

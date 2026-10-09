@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BFF8B098306C2F7900B7DFA8 /* FSRS in Frameworks */ = {isa = PBXBuildFile; productRef = BFF8B097306C2F7900B7DFA8 /* FSRS */; };
+		BF828F9230788AED008A9B37 /* SwiftFSRS in Frameworks */ = {isa = PBXBuildFile; productRef = BF828F9130788AED008A9B37 /* SwiftFSRS */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,7 +80,7 @@
 		BF1DB831306A4F0400ADF741 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-				BFF8B098306C2F7900B7DFA8 /* FSRS in Frameworks */,
+				BF828F9230788AED008A9B37 /* SwiftFSRS in Frameworks */,
 			);
 		};
 		BF1DB840306A4F0500ADF741 /* Frameworks */ = {
@@ -144,7 +144,7 @@
 			);
 			name = Algorithothm;
 			packageProductDependencies = (
-				BFF8B097306C2F7900B7DFA8 /* FSRS */,
+				BF828F9130788AED008A9B37 /* SwiftFSRS */,
 			);
 			productName = Algorithothm;
 			productReference = BF1DB834306A4F0400ADF741 /* Algorithothm.app */;
@@ -225,7 +225,7 @@
 			mainGroup = BF1DB82B306A4F0400ADF741;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				BFF8B096306C2F7900B7DFA8 /* XCRemoteSwiftPackageReference "swift-fsrs" */,
+				BF828F9030788AED008A9B37 /* XCRemoteSwiftPackageReference "swift-fsrs" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BF1DB835306A4F0400ADF741 /* Products */;
@@ -633,21 +633,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		BFF8B096306C2F7900B7DFA8 /* XCRemoteSwiftPackageReference "swift-fsrs" */ = {
+		BF828F9030788AED008A9B37 /* XCRemoteSwiftPackageReference "swift-fsrs" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/open-spaced-repetition/swift-fsrs.git";
+			repositoryURL = "https://github.com/4rays/swift-fsrs";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
+				kind = exactVersion;
+				version = 0.9.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		BFF8B097306C2F7900B7DFA8 /* FSRS */ = {
+		BF828F9130788AED008A9B37 /* SwiftFSRS */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = BFF8B096306C2F7900B7DFA8 /* XCRemoteSwiftPackageReference "swift-fsrs" */;
-			productName = FSRS;
+			package = BF828F9030788AED008A9B37 /* XCRemoteSwiftPackageReference "swift-fsrs" */;
+			productName = SwiftFSRS;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
