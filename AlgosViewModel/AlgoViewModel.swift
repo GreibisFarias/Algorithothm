@@ -9,6 +9,36 @@ import Foundation
 import Combine
 import SwiftUI
 
+//var allTheCardsLocal = allTheCard()
+//var arrayOfCards = allTheCardsLocal.allaTheCards
+//
+//
+//var architechtureCards: [flashcard] = arrayOfCards.filter {
+//    card in switch card.cardType {
+//    case .ArchitechtureCard:
+//        return true
+//        
+//    default:
+//        return false
+//    }
+//   
+//}
+
+var cardsStrategy = FSRSStrategy()
+
+var todayCardsArch = cardsStrategy.todayCards
+
+var architechtureCards: [flashcard] = todayCardsArch.filter {
+    card in switch card.cardType {
+    case .ArchitechtureCard:
+        return true
+        
+    default:
+        return false
+    }
+}
+
+
 struct GetDataArchMock{
      var archs: [[architectureModules]] = []
      var currentCart: Int = 0
@@ -45,7 +75,7 @@ class ValidationOfArch: ObservableObject {
     @Published var MockData = GetDataArchMock()
     
     
-   public func validateAndConnect(from sourceID: UUID, at touchLocation: CGPoint) {
+    public func validateAndConnect(modules: inout [architectureModules], from sourceID: UUID, at touchLocation: CGPoint) {
        guard var modules = MockData.activeArchitecture else { return }
         guard let sourceIndex = modules.firstIndex(where: { $0.id == sourceID }) else { return }
         let sourceNode = modules[sourceIndex]
@@ -95,4 +125,3 @@ class ValidationOfArch: ObservableObject {
         }
     }
 }
-

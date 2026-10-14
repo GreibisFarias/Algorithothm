@@ -76,7 +76,8 @@ class FlashcardViewModel: ObservableObject {
         return cards[currentIndex]
     }
     
-    var scheduler = LongTermScheduler()
+    var scheduler = SchedulerType.longTerm.implementation
+    var algoritm = FSRSAlgorithm.v5
     
     /// Procesa el repaso llamando directamente al método estático/enum de 4rays/swift-fsrs
     func reviewCurrentCard(rating: Rating) {
@@ -85,18 +86,19 @@ class FlashcardViewModel: ObservableObject {
         let now = Date()
         
         // Llamada nativa exacta de 4rays/swift-fsrs:
-        let reviewResult = scheduler.schedule(
+        let reviewResult = scheduler.schedule (
             card: card.fsrsCard,
+            algorithm: algoritm,
             reviewRating: rating,
             reviewTime: now
-        )
+            )
         
         // Guardamos la tarjeta con su nuevo estado y su nueva fecha 'due'
-        cards[currentIndex].fsrsCard = reviewResult.card
+        cards[currentIndex].fsrsCard = reviewResult.postReviewCard
         
         print("--- TARJETA REVISADA (4rays/swift-fsrs) ---")
         print("Título: \(card.titleKey)")
-        print("Próximo repaso (due): \(reviewResult.card.due.formatted())")
+        print("Próximo repaso (due): \(reviewResult.postReviewCard.due.formatted())")
         print("------------------------------------------")
         
         nextCard()
@@ -180,7 +182,7 @@ struct FSRSTRY: View {
                     }
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(RoundedRectangle(cornerRadius: 12).stroke(Color.gray.opacity(0.3)))
+                    .background(RoundedRectangle(cornerRadius: 12).stroke(Color.gray.opacity( 0.3)))
                     .padding(.horizontal)
                     
                     Spacer()
