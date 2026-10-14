@@ -9,20 +9,18 @@ import SwiftUI
 
 
 struct DragAndHoldView: View {
-    let DatToday: flashRapid = mockData.HELLOBEO
-    @State private var selectedOption: ProgrammingLenguages = .swift
-    private var currentCod: String{
-        DatToday.codeByLenguage[selectedOption] ?? "Sin codigo"
-    }
+    var ola = ArchitectureStudyViewModel()
     var body: some View {
         
         ZStack{
+           
             VStack{
-                
-            }
+                Text(ola.currentCard?.prompt ?? "ño")
             LinearGradient(colors: [.purple, .blue], startPoint: .topLeading, endPoint: .bottomTrailing)
                 .cornerRadius(60)
-            
+              
+            }
+           
             DragAndHoldTecnicView()
                 .padding()
             

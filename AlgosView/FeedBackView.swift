@@ -9,25 +9,25 @@ import SwiftUI
 import SwiftFSRS
 
 struct FeedBackView: View {
-    var FSRSViewModel = FSRSStrategy()
+    var studyVM =  ArchitectureStudyViewModel()
     var body: some View {
         VStack{
             Button("Facil"){
-                FSRSViewModel.reviewCurrentCard(rating: .easy)
+                studyVM.completeCurrentCard(rating: .easy)
             }
             .tint(.green)
             
             Button("Normal"){
-                FSRSViewModel.reviewCurrentCard(rating: .good)
+                studyVM.completeCurrentCard(rating: .good)
             }
             .tint(.black)
             Button("Dificil"){
-                FSRSViewModel.reviewCurrentCard(rating: .hard)
+                studyVM.completeCurrentCard(rating: .hard)
             }
             .tint(.red)
             
             Button("Otra vez"){
-                FSRSViewModel.reviewCurrentCard(rating: .again)
+                studyVM.completeCurrentCard(rating: .again)
             }
         }
         .buttonStyle(.borderedProminent)

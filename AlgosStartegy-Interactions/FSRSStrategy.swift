@@ -43,7 +43,7 @@ class FSRSStrategy{
     var todayCards: [flashcard]{
         let now = Date()
         return flashcards.filter {
-            card in card.card.due <= Date()
+            card in card.card.due == now
         }
     }
     

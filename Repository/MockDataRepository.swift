@@ -23,7 +23,7 @@ enum TypeOfCard{
 struct flashcard {
     var difficulty: Dificulties
     var cardType: TypeOfCard
-    var prompt: String
+    var prompt: String = ""
     
     var card: Card = Card()
 }

@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import SwiftUI
+import SwiftFSRS
 
 //var allTheCardsLocal = allTheCard()
 //var arrayOfCards = allTheCardsLocal.allaTheCards
@@ -17,31 +18,77 @@ import SwiftUI
 //    card in switch card.cardType {
 //    case .ArchitechtureCard:
 //        return true
-//        
+//
 //    default:
 //        return false
 //    }
-//   
+//
 //}
 
-var cardsStrategy = FSRSStrategy()
 
-var todayCardsArch = cardsStrategy.todayCards
-
-var architechtureCards: [flashcard] = todayCardsArch.filter {
-    card in switch card.cardType {
-    case .ArchitechtureCard:
-        return true
-        
-    default:
-        return false
+class ArchitectureStudyViewModel: ObservableObject{
+    @Published var cardsStrategy = FSRSStrategy()
+    @Published var currentIndex: Int = 0
+    @Published var isFinished: Bool = false
+    
+    var architechtureCards: [flashcard]{
+        cardsStrategy.todayCards.filter {
+            card in switch card.cardType {
+            case .ArchitechtureCard:
+                return true
+            default:
+                return false
+            }
+        }
     }
+    
+    var currentCard: flashcard? {
+        guard architechtureCards.indices.contains(currentIndex) else { return nil }
+        return architechtureCards[currentIndex]
+    }
+    
+    var activeArchitectureModules: [architectureModules] {
+        get{
+            guard let card = currentCard else { return [] }
+            
+            if case .ArchitechtureCard(let validationModules) = card.cardType {
+                return validationModules
+            }
+            return []
+        }
+        
+        set{
+            if let card = currentCard,
+               let globalIndex = cardsStrategy.flashcards.firstIndex(where: { $0.prompt == card.prompt} ){
+                cardsStrategy.flashcards[globalIndex].cardType = .ArchitechtureCard(newValue)
+            }
+        }
+    }
+    
+    func completeCurrentCard(rating: Rating) {
+            guard let card = currentCard else { return }
+            
+            if let globalIndex = cardsStrategy.flashcards.firstIndex(where: { $0.prompt == card.prompt }) {
+                cardsStrategy.currentIndex = globalIndex
+                cardsStrategy.reviewCurrentCard(rating: rating) // ¡Aquí actúa la magia del algoritmo FSRS!
+            }
+            
+            // Avanzamos a la siguiente tarjeta de arquitectura de hoy
+        
+        if currentIndex + 1 < architechtureCards.count {
+            print("array es \(architechtureCards.count)")
+                currentIndex += 1
+                print("indice es  \(currentIndex)")
+                
+            } else {
+                isFinished = true
+            }
+        }
 }
 
-
 struct GetDataArchMock{
-     var archs: [[architectureModules]] = []
-     var currentCart: Int = 0
+    var archs: [[architectureModules]] = []
+    var currentCart: Int = 0
     
     
     let dataSource = ArchDataSource()
@@ -55,16 +102,17 @@ struct GetDataArchMock{
     }
     
     var activeArchitecture: [architectureModules]? {
-            get {
-                guard archs.indices.contains(currentCart) else { return nil }
-                return archs[currentCart]
-            }
-            set {
-                if let newValue = newValue, archs.indices.contains(currentCart) {
-                    archs[currentCart] = newValue
-                }
+        get {
+            guard archs.indices.contains(currentCart) else { return nil }
+            return archs[currentCart]
+        }
+        set {
+            if let newValue = newValue, archs.indices.contains(currentCart) {
+                archs[currentCart] = newValue
             }
         }
+    }
+    
 }
 
 class ValidationOfArch: ObservableObject {
@@ -75,13 +123,12 @@ class ValidationOfArch: ObservableObject {
     @Published var MockData = GetDataArchMock()
     
     
-    public func validateAndConnect(modules: inout [architectureModules], from sourceID: UUID, at touchLocation: CGPoint) {
-       guard var modules = MockData.activeArchitecture else { return }
-        guard let sourceIndex = modules.firstIndex(where: { $0.id == sourceID }) else { return }
-        let sourceNode = modules[sourceIndex]
+    public func validateAndConnect( validationModules: inout [architectureModules], from sourceID: UUID, at touchLocation: CGPoint ) {
+        guard let sourceIndex = validationModules.firstIndex(where: { $0.id == sourceID }) else { return }
+        let sourceNode = validationModules[sourceIndex]
         
         // 1. Buscar en qué cuadrado soltaste el dedo
-        let touchedNode = modules.first(where: { element in
+        let touchedNode = validationModules.first(where: { element in
             let frame = CGRect(
                 x: element.position.x - element.size.width / 2,
                 y: element.position.y - element.size.height / 2,
@@ -96,27 +143,26 @@ class ValidationOfArch: ObservableObject {
             
             //Desempaquetado correcto del opcional Bool
             let isValidConnection = sourceNode.targetId?.contains(targetNode.id) ?? false
-                        
-                        if isValidConnection {
-                            // ¡CORRECTO! Guarda la conexión en la lista
-                            modules[sourceIndex].moduleMustBeConnected.insert(targetNode.id)
-                            
-                            MockData.activeArchitecture = modules
-                            
-                            self.Congrats = "Well Done Dude"
-                            self.showCongratsAlert = true
-                        } else {
-                            // ¡INCORRECTO! Resetea y muestra error
-                            modules[sourceIndex].moduleMustBeConnected = []
-                            self.errorMessage = "That's not the correct answer!"
-                            self.showErrorAlert = true
-                        }
+            
+            if isValidConnection {
+                // ¡CORRECTO! Guarda la conexión en la lista
+                validationModules[sourceIndex].moduleMustBeConnected.insert(targetNode.id)
+                
+                
+                
+                self.Congrats = "Well Done Dude"
+                self.showCongratsAlert = true
+            } else {
+                // ¡INCORRECTO! Resetea y muestra error
+                validationModules[sourceIndex].moduleMustBeConnected = []
+                self.errorMessage = "That's not the correct answer!"
+                self.showErrorAlert = true
+            }
         } else {
             // Si soltó en el espacio vacío, simplemente resetea la conexión
-            modules[sourceIndex].moduleMustBeConnected = []
+            validationModules[sourceIndex].moduleMustBeConnected = []
         }
-       
-       MockData.activeArchitecture = modules
+        
     }
     
     func nextCard(){
