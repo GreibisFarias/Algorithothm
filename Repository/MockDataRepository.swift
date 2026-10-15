@@ -42,7 +42,7 @@ var archs = ArchDataSource()
 class allTheCard{
         var mvvmArchsCard = flashcard(difficulty: .Easy, cardType: .ArchitechtureCard(archs.mvvm), prompt: "Hola")
         var viperArchsCard = flashcard(difficulty: .Medium, cardType: .ArchitechtureCard(archs.viper), prompt: "Adios")
-        var sortFirst = flashcard(difficulty: .Easy, cardType: .SortindCard(.sortDescending), prompt: "jaja")
+    var sortFirst = flashcard(difficulty: .Easy, cardType: .SortindCard(.climbingStairs), prompt: "jaja")
     
     lazy var allaTheCards: [flashcard] = [mvvmArchsCard, viperArchsCard, sortFirst]
 }
