@@ -118,11 +118,5 @@ class ArrowDrawning{
     
 }
 
-enum TypeExercise{
-    case arch(architectureModules)
-}
-
-
-
 
 
