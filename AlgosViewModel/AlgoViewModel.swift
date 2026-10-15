@@ -29,12 +29,12 @@ import SwiftFSRS
 class ArchitectureStudyViewModel: ObservableObject{
 //    @Published var cardsStrategy = FSRSStrategy()
     @Published var currentIndex: Int = 0
-    @Published  var flashcards: [flashcard] = allTheCard().allaTheCards
+    @Published var flashcards: [flashcard] = allTheCard().allaTheCards
     @Published var architechtureCards: [flashcard] = []
     @Published var isFinished: Bool = false
     
     private var scheduler = SchedulerType.longTerm.implementation
-        private var algorithm = FSRSAlgorithm.v5
+    private var algorithm = FSRSAlgorithm.v5
 
         // 2. Filtramos las tarjetas que tocan HOY basadas en el due real
     init() {
@@ -53,7 +53,7 @@ class ArchitectureStudyViewModel: ObservableObject{
         
         private func caseMatchArchitecture(_ type: TypeOfCard) -> Bool {
             switch type {
-            case .ArchitechtureCard: return true
+                case .ArchitechtureCard: return true
             default: return false
             }
         }
@@ -64,6 +64,7 @@ class ArchitectureStudyViewModel: ObservableObject{
     }
     
     var activeArchitectureModules: [architectureModules] {
+        
         get{
             guard let card = currentCard else { return [] }
             
