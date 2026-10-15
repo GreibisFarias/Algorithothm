@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftFSRS
 
 
 struct DragAndHoldView: View {
@@ -16,6 +17,7 @@ struct DragAndHoldView: View {
            
             VStack{
                 Text(ola.currentCard?.prompt ?? "ño")
+                Text("\(ola.currentCard?.card.due)")
             LinearGradient(colors: [.purple, .blue], startPoint: .topLeading, endPoint: .bottomTrailing)
                 .cornerRadius(60)
               
