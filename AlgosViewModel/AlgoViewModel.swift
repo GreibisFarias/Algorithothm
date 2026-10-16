@@ -10,20 +10,6 @@ import Combine
 import SwiftUI
 import SwiftFSRS
 
-//var allTheCardsLocal = allTheCard()
-//var arrayOfCards = allTheCardsLocal.allaTheCards
-//
-//
-//var architechtureCards: [flashcard] = arrayOfCards.filter {
-//    card in switch card.cardType {
-//    case .ArchitechtureCard:
-//        return true
-//
-//    default:
-//        return false
-//    }
-//
-//}
 
 
 class ArchitectureStudyViewModel: ObservableObject{
@@ -112,88 +98,57 @@ class ArchitectureStudyViewModel: ObservableObject{
         }
 }
 
-struct GetDataArchMock{
-    var archs: [[architectureModules]] = []
-    var currentCart: Int = 0
-    
-    
-    let dataSource = ArchDataSource()
-    
-    init () {
-        getExercises()
-    }
-    
-    mutating func getExercises() {
-        self.archs = [dataSource.mvvm, dataSource.viper]
-    }
-    
-    var activeArchitecture: [architectureModules]? {
-        get {
-            guard archs.indices.contains(currentCart) else { return nil }
-            return archs[currentCart]
-        }
-        set {
-            if let newValue = newValue, archs.indices.contains(currentCart) {
-                archs[currentCart] = newValue
-            }
-        }
-    }
-    
-}
 
-class ValidationOfArch: ObservableObject {
-    @Published var errorMessage: String? = nil
-    @Published var showErrorAlert = false
-    @Published var Congrats: String? = nil
-    @Published var showCongratsAlert = false
-    @Published var MockData = GetDataArchMock()
-    
-    
-    public func validateAndConnect( validationModules: inout [architectureModules], from sourceID: UUID, at touchLocation: CGPoint ) {
-        guard let sourceIndex = validationModules.firstIndex(where: { $0.id == sourceID }) else { return }
-        let sourceNode = validationModules[sourceIndex]
-        
-        // 1. Buscar en qué cuadrado soltaste el dedo
-        let touchedNode = validationModules.first(where: { element in
-            let frame = CGRect(
-                x: element.position.x - element.size.width / 2,
-                y: element.position.y - element.size.height / 2,
-                width: element.size.width,
-                height: element.size.height
-            )
-            return frame.insetBy(dx: -10, dy: -10).contains(touchLocation)
-        })
-        
-        // 2. Si soltaste el dedo dentro de algún cuadrado
-        if let targetNode = touchedNode, targetNode.id != sourceID {
-            
-            //Desempaquetado correcto del opcional Bool
-            let isValidConnection = sourceNode.targetId?.contains(targetNode.id) ?? false
-            
-            if isValidConnection {
-                // ¡CORRECTO! Guarda la conexión en la lista
-                validationModules[sourceIndex].moduleMustBeConnected.insert(targetNode.id)
-                
-                
-                
-                self.Congrats = "Well Done Dude"
-                self.showCongratsAlert = true
-            } else {
-                // ¡INCORRECTO! Resetea y muestra error
-                validationModules[sourceIndex].moduleMustBeConnected = []
-                self.errorMessage = "That's not the correct answer!"
-                self.showErrorAlert = true
-            }
-        } else {
-            // Si soltó en el espacio vacío, simplemente resetea la conexión
-            validationModules[sourceIndex].moduleMustBeConnected = []
-        }
-        
-    }
-    
-    func nextCard(){
-        if MockData.currentCart < MockData.archs.count{
-            MockData.currentCart += 1
-        }
-    }
-}
+
+
+//func nextCard(){
+//        if MockData.currentCart < MockData.archs.count{
+//            MockData.currentCart += 1
+//        }
+//    }
+
+
+//struct GetDataArchMock{
+//    var archs: [[architectureModules]] = []
+//    var currentCart: Int = 0
+//
+//
+//    let dataSource = ArchDataSource()
+//
+//    init () {
+//        getExercises()
+//    }
+//
+//    mutating func getExercises() {
+//        self.archs = [dataSource.mvvm, dataSource.viper]
+//    }
+//
+//    var activeArchitecture: [architectureModules]? {
+//        get {
+//            guard archs.indices.contains(currentCart) else { return nil }
+//            return archs[currentCart]
+//        }
+//        set {
+//            if let newValue = newValue, archs.indices.contains(currentCart) {
+//                archs[currentCart] = newValue
+//            }
+//        }
+//    }
+//
+//}
+
+//var allTheCardsLocal = allTheCard()
+//var arrayOfCards = allTheCardsLocal.allaTheCards
+//
+//
+//var architechtureCards: [flashcard] = arrayOfCards.filter {
+//    card in switch card.cardType {
+//    case .ArchitechtureCard:
+//        return true
+//
+//    default:
+//        return false
+//    }
+//
+//}
+
