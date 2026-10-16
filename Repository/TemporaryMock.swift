@@ -9,10 +9,13 @@ import Foundation
 
 enum ProgrammingLenguages: String, CaseIterable, Identifiable{
     case swift = "Swift"
-    case python = "python"
+    case python = "Python"
     case java = "Java"
     
     var id: String {rawValue}
+
+    /// Where the language the user picked is saved (`@AppStorage`). Every deck reads it from here.
+    static let storageKey = "selectedProgrammingLanguage"
 }
 
 struct flashRapid{

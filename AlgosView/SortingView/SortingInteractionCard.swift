@@ -4,80 +4,70 @@
 //
 //  Created by Greibis Farias on 29/9/26.
 //
+//  "Tipo 2 · Aprende y arma" card: a front that teaches with a solved example and a back where
+//  the user builds a similar function. Flipping, submitting and the animations live here.
+//
 
 import SwiftUI
 
-// MARK: - View (This view is just to check the mechanism I have created, of course we will change this when Jose give us the design.)
 struct SortingInteractionCard: View {
 
     @State private var viewModel: SortingCardViewModel
+    private let progress: String?
+    private let onClose: () -> Void
 
-    // Animation only: where each row is and which blocks already reached the function panel.
-    @State private var rowFrames: [UUID: CGRect] = [:]
-    @State private var landed: Set<UUID> = []
+    // Animation only: where each slot is and which blocks already reached the big monitor.
+    @State private var slotFrames: [Int: CGRect] = [:]
+    @State private var landed: Set<Int> = []
 
-    init(exercise: SortingExercise, language: ProgrammingLenguages = .swift, onRate: @escaping (ExerciseDifficulty) -> Void = { _ in }) {
+    /// - Parameters:
+    ///   - language: the one the user picked, the card doesn't let them change it.
+    ///   - progress: position in the deck, shown in the header ("1/10").
+    ///   - onClose: the back button of the front side.
+    init(
+        exercise: SortingExercise,
+        language: ProgrammingLenguages,
+        progress: String? = nil,
+        onRate: @escaping (ExerciseDifficulty) -> Void = { _ in },
+        onClose: @escaping () -> Void = {}
+    ) {
         _viewModel = State(initialValue: SortingCardViewModel(exercise: exercise, language: language, onRate: onRate))
+        self.progress = progress
+        self.onClose = onClose
     }
 
     var body: some View {
         ZStack {
-            List {
-                Section {
-                    Text(viewModel.exercise.title).font(.headline)
-                    Text(viewModel.exercise.description).foregroundStyle(.secondary)
+            RetroBackground()
 
-                    LanguagePicker(languages: viewModel.exercise.languages, selection: $viewModel.language)
-                        .disabled(!viewModel.canEdit)
-                }
+            VStack(spacing: 18) {
+                RetroCardHeader(
+                    theme: .aprendeYArma,
+                    stepLabel: stepLabel,
+                    steps: 2,
+                    currentStep: viewModel.side == .front ? 0 : 1,
+                    backLabel: viewModel.side == .front ? "Volver al inicio" : "Volver al frente de la tarjeta",
+                    onBack: back
+                )
+                .padding(.horizontal, 24)
 
-                Section("Examples") {
-                    ForEach(viewModel.exercise.examples, id: \.self) { example in
-                        Text(example).font(.system(.footnote, design: .monospaced))
-                    }
-                }
+                ZStack {
+                    SortingCardFront(viewModel: viewModel, onFlip: flip)
+                        .modifier(CardFace(angle: viewModel.side == .front ? 0 : -180))
 
-                // The setup and the ending are fixed, only the loop body can be moved
-                Section {
-                    ForEach(viewModel.blocks) { part in
-                        codeLine(part.code)
-                            // while the copy is flying, the original stays hidden in its row
-                            .opacity(isOverlayVisible ? 0 : 1)
-                            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
-                                rowFrames[part.id] = $0
-                            }
-                    }
-                    .onMove(perform: viewModel.move)
-                    .moveDisabled(viewModel.isSolved)
-                } header: {
-                    fixedCode(viewModel.solution.setup, caption: "Loop body — drag to reorder")
-                } footer: {
-                    fixedCode(viewModel.solution.ending)
-                }
-
-                Section {
-                    Button(action: submit) {
-                        Text(buttonTitle).frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(viewModel.isSolved ? .green : .accentColor)
-                    .disabled(!viewModel.canEdit)
-                    .listRowBackground(Color.clear)
-
-                    if viewModel.showRetryHint {
-                        Text("Not quite. Check which line has to come first and try again.")
-                            .foregroundStyle(.red)
-                            .font(.footnote)
-                    }
+                    SortingCardBack(viewModel: viewModel, slotFrames: $slotFrames, isSubmitting: isOverlayVisible, onSubmit: submit)
+                        .modifier(CardFace(angle: viewModel.side == .back ? 0 : 180))
                 }
             }
+            .padding(.top, 12)
 
             if isOverlayVisible {
-                SortingSubmissionOverlay(viewModel: viewModel, landed: landed, rowFrames: rowFrames)
+                SortingSubmissionOverlay(viewModel: viewModel, landed: landed, sourceFrames: slotFrames)
                     .transition(.opacity)
             }
         }
-
+        .coordinateSpace(.sortingCard)
+        .foregroundStyle(Retro.text)
         //This would add like vibrations when the user makes a mistake or losses. Jus thought it could be cool to add that.
         .sensoryFeedback(.success, trigger: viewModel.phase == .result(isCorrect: true))
         .sensoryFeedback(.error, trigger: viewModel.phase == .result(isCorrect: false))
@@ -90,30 +80,26 @@ struct SortingInteractionCard: View {
         }
     }
 
-    private func codeLine(_ code: String) -> some View {
-        SortingCodeLine(code, language: viewModel.solution.language)
+    /// "1/10 · FRENTE"
+    private var stepLabel: String {
+        let side = viewModel.side == .front ? "FRENTE" : "REVERSO"
+        guard let progress else { return side }
+        return "\(progress) · \(side)"
     }
 
-    /// Code the user can't move, shown above and below the loop body.
-    private func fixedCode(_ code: String, caption: String? = nil) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            codeLine(code)
-                .opacity(0.75)
-            if let caption {
-                Text(caption)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
+    // MARK: Actions
+
+    private func back() {
+        if viewModel.side == .back {
+            flip()
+        } else {
+            onClose()
         }
-        .textCase(nil)
-        .padding(.vertical, 4)
     }
 
-    private var buttonTitle: String {
-        viewModel.isSolved ? "Solved ✓" : "Check answer"
+    private func flip() {
+        withAnimation(.easeInOut(duration: 0.5)) { viewModel.flip() }
     }
-
-    // MARK: Animation of the submission
 
     private func submit() {
         landed = []
@@ -123,9 +109,9 @@ struct SortingInteractionCard: View {
             // let the panel appear and measure its slots before the blocks start flying
             await pause(0.35)
 
-            // the blocks float one by one, in the order the user picked
-            for part in viewModel.blocks {
-                withAnimation(.spring(duration: 0.5, bounce: 0.2)) { _ = landed.insert(part.id) }
+            // the blocks float one by one, from the first slot to the last
+            for index in viewModel.slots.indices {
+                withAnimation(.spring(duration: 0.5, bounce: 0.2)) { _ = landed.insert(index) }
                 await pause(0.25)
             }
             await pause(0.4)
@@ -136,7 +122,7 @@ struct SortingInteractionCard: View {
             if isCorrect {
                 withAnimation(.spring(duration: 0.4)) { viewModel.finishSubmission() }
             } else {
-                // blocks go back to their rows, keeping the order the user had
+                // blocks go back to their slots, keeping the order the user had
                 withAnimation(.spring(duration: 0.5, bounce: 0.1)) { landed = [] }
                 await pause(0.5)
                 withAnimation(.easeOut(duration: 0.25)) { viewModel.finishSubmission() }
@@ -149,14 +135,34 @@ struct SortingInteractionCard: View {
     }
 }
 
-#Preview("Two Sum") {
-    SortingInteractionCard(exercise: .twoSum)
+/// One face of the card. It turns around the vertical axis and hides once it is edge-on,
+/// so the other face shows up for the second half of the turn.
+private struct CardFace: ViewModifier, Animatable {
+    var angle: Double
+
+    nonisolated var animatableData: Double {
+        get { angle }
+        set { angle = newValue }
+    }
+
+    func body(content: Content) -> some View {
+        let isFacingUser = abs(angle) < 90
+        content
+            .opacity(isFacingUser ? 1 : 0)
+            .rotation3DEffect(.degrees(angle), axis: (x: 0, y: 1, z: 0), perspective: 0.4)
+            .allowsHitTesting(isFacingUser)
+            .accessibilityHidden(!isFacingUser)
+    }
 }
 
-#Preview("Reverse Linked List · Python") {
-    SortingInteractionCard(exercise: .reverseLinkedList, language: .python)
+#Preview("Filtrar pares · Swift") {
+    SortingInteractionCard(exercise: .evenWords, language: .swift, progress: "1/10")
 }
 
-#Preview("Climbing Stairs · Java") {
-    SortingInteractionCard(exercise: .climbingStairs, language: .java)
+#Preview("FizzBuzz · Python") {
+    SortingInteractionCard(exercise: .fizzBuzz, language: .python, progress: "5/10")
+}
+
+#Preview("Dos sumas · Java") {
+    SortingInteractionCard(exercise: .twoSum, language: .java, progress: "7/10")
 }

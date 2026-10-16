@@ -2,111 +2,108 @@
 //  SortingSubmissionOverlay.swift
 //  Algorithothm
 //
-//  Shown while the answer is checked: copies of the blocks float from their rows
-//  into the function panel, the panel turns green or red, then the rating appears.
+//  Shown while the answer is checked: copies of the blocks float from their slots into a
+//  bigger monitor with the whole function, its screen turns green or red, then the rating appears.
 //
 
 import SwiftUI
 
 struct SortingSubmissionOverlay: View {
     let viewModel: SortingCardViewModel
-    /// Blocks that already reached their slot in the panel.
-    let landed: Set<UUID>
-    /// Frames (global) of the blocks in the list, where the copies start flying from.
-    let rowFrames: [UUID: CGRect]
+    /// Slots whose block already reached the big monitor.
+    let landed: Set<Int>
+    /// Frames of the slots on the card, where the copies start flying from.
+    let sourceFrames: [Int: CGRect]
 
-    // Frames (global) of the slots in the panel, where the copies end.
-    @State private var slotFrames: [UUID: CGRect] = [:]
+    // Frames of the slots of the big monitor, where the copies end.
+    @State private var targetFrames: [Int: CGRect] = [:]
     @State private var overlayOrigin: CGPoint = .zero
-
-    @Environment(\.codeTheme) private var codeTheme
 
     var body: some View {
         ZStack {
             // Covers the whole card, which also blocks any interaction during the animation
-            Color.black.opacity(0.45)
+            Color.black.opacity(0.8)
                 .ignoresSafeArea()
 
             if viewModel.phase == .feedback {
-                DifficultyRatingView(onRate: rate)
+                RetroRatingView(theme: .aprendeYArma, onRate: rate)
                     .transition(.scale(scale: 0.9).combined(with: .opacity))
             } else {
                 functionPanel
                     .transition(.opacity)
 
-                ForEach(viewModel.blocks) { part in
-                    flyingBlock(part)
+                ForEach(viewModel.slots.indices, id: \.self) { index in
+                    flyingBlock(index)
                 }
             }
         }
-        .onGeometryChange(for: CGPoint.self) { $0.frame(in: .global).origin } action: {
+        .onGeometryChange(for: CGPoint.self) { $0.frame(in: .sortingCard).origin } action: {
             overlayOrigin = $0
         }
     }
 
     private var functionPanel: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Your function")
-                .font(.headline)
+        VStack(alignment: .leading, spacing: 10) {
+            Text("TU FUNCIÓN")
+                .font(RetroFont.pixel(14, relativeTo: .caption))
+                .foregroundStyle(Retro.accent)
+                .tracking(1)
 
-            VStack(alignment: .leading, spacing: 4) {
-                codeLine(viewModel.solution.setup)
+            RetroMonitor(screen: screenColor, border: borderColor) {
+                codeLines(viewModel.solution.setup)
 
                 // Invisible slots: they give the flying blocks their final position
-                ForEach(viewModel.blocks) { part in
-                    codeLine(part.code)
+                ForEach(viewModel.slots.indices, id: \.self) { index in
+                    block(at: index)
                         .hidden()
-                        .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
-                            slotFrames[part.id] = $0
+                        .onGeometryChange(for: CGRect.self) { $0.frame(in: .sortingCard) } action: {
+                            targetFrames[index] = $0
                         }
                 }
 
-                codeLine(viewModel.solution.ending)
+                codeLines(viewModel.solution.ending)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(12)
-            .background(codeTheme.background, in: RoundedRectangle(cornerRadius: 8))
+            .animation(.easeInOut(duration: 0.3), value: viewModel.phase)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(panelBackground, in: RoundedRectangle(cornerRadius: 12))
-        .overlay {
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(panelBorder, lineWidth: 2)
-        }
-        .padding(.horizontal, 20)
-        .animation(.easeInOut(duration: 0.3), value: viewModel.phase)
+        .padding(.horizontal, 24)
     }
 
     @ViewBuilder
-    private func flyingBlock(_ part: CodePart) -> some View {
-        let isLanded = landed.contains(part.id)
-        // A row that is scrolled off screen has no frame, so its block just fades in at its slot
-        let source = rowFrames[part.id]
-        if let frame = (isLanded ? slotFrames[part.id] : source) ?? slotFrames[part.id] {
-            codeLine(part.code)
-                .frame(width: frame.width, height: frame.height, alignment: .leading)
+    private func flyingBlock(_ index: Int) -> some View {
+        let isLanded = landed.contains(index)
+        if let frame = isLanded ? targetFrames[index] : sourceFrames[index] {
+            block(at: index)
+                .environment(\.codeTheme, .monitor)
+                .frame(width: frame.width, height: frame.height, alignment: .topLeading)
                 .position(x: frame.midX - overlayOrigin.x, y: frame.midY - overlayOrigin.y)
-                .opacity(isLanded || source != nil ? 1 : 0)
         }
     }
 
-    private func codeLine(_ code: String) -> some View {
-        SortingCodeLine(code, language: viewModel.solution.language)
-    }
-
-    private var panelBackground: Color {
-        switch viewModel.phase {
-        case .result(isCorrect: true): Color.green.opacity(0.25)
-        case .result(isCorrect: false): Color.red.opacity(0.25)
-        default: Color(.secondarySystemGroupedBackground)
+    @ViewBuilder
+    private func block(at index: Int) -> some View {
+        if let part = viewModel.slots[index] {
+            MonitorBlock(part: part, language: viewModel.language, isHint: viewModel.isLocked(index))
         }
     }
 
-    private var panelBorder: Color {
+    private func codeLines(_ code: String) -> some View {
+        ForEach(Array(code.split(separator: "\n", omittingEmptySubsequences: false).enumerated()), id: \.offset) { _, line in
+            MonitorCodeLine(code: String(line), language: viewModel.language)
+        }
+    }
+
+    private var screenColor: Color {
         switch viewModel.phase {
-        case .result(isCorrect: true): .green
-        case .result(isCorrect: false): .red
+        case .result(isCorrect: true): Retro.screenCorrect
+        case .result(isCorrect: false): Retro.screenWrong
+        default: Retro.screen
+        }
+    }
+
+    private var borderColor: Color {
+        switch viewModel.phase {
+        case .result(isCorrect: true): Retro.phosphor
+        case .result(isCorrect: false): Retro.error
         default: .clear
         }
     }

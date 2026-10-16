@@ -2,15 +2,20 @@
 //  SortingCardViewModel.swift
 //  Algorithothm
 //
-//  Handles what the user does on a sorting card: reorder blocks, change language,
-//  submit and rate. The view only decides how each step is animated.
+//  Handles what the user does on a sorting card: flip it, drop blocks into the slots of the
+//  monitor, submit and rate. The view only decides how each step is animated.
 //
 
 import Foundation
-import SwiftUI   // Observation, and Array.move(fromOffsets:toOffset:)
+import Observation
 
 @Observable
 final class SortingCardViewModel {
+
+    enum Side {
+        case front      // the solved example and what it does
+        case back       // the function the user builds
+    }
 
     enum Phase: Equatable {
         case editing
@@ -21,9 +26,13 @@ final class SortingCardViewModel {
     }
 
     let exercise: SortingExercise
+    let variant: SortingVariant
 
-    private(set) var solution: LoopSolution
-    private(set) var blocks: [CodePart]
+    private(set) var side: Side = .front
+    /// Every block of the loop body, in the order they are shown below the monitor.
+    private(set) var pool: [CodePart]
+    /// What is in each slot of the monitor. The right answer is `solution.loopBody`.
+    private(set) var slots: [CodePart?]
     private(set) var phase: Phase = .editing
     private(set) var showRetryHint = false
 
@@ -32,48 +41,72 @@ final class SortingCardViewModel {
     private let onRate: (ExerciseDifficulty) -> Void
     private var isLastSubmissionCorrect = false
 
+    /// - Parameter language: the language the user picked, the card has no picker of its own.
     init(
         exercise: SortingExercise,
-        language: ProgrammingLenguages = .swift,
+        language: ProgrammingLenguages,
         strategy: SortingStrategy = SortingStrategy(),
         onRate: @escaping (ExerciseDifficulty) -> Void = { _ in }
     ) {
         self.exercise = exercise
         self.strategy = strategy
         self.onRate = onRate
-        let solution = exercise.solution(in: language)
-        self.solution = solution
-        self.blocks = strategy.startingOrder(for: solution)
+        let variant = exercise.variant(in: language)
+        self.variant = variant
+        self.pool = strategy.poolOrder(for: variant.solution)
+        self.slots = strategy.startingSlots(for: variant.solution)
     }
 
-    var language: ProgrammingLenguages {
-        get { solution.language }
-        set { select(newValue) }
-    }
+    var solution: LoopSolution { variant.solution }
+    var example: CodeExample { variant.example }
+    var language: ProgrammingLenguages { variant.language }
 
     var canEdit: Bool { phase == .editing }
     var isSolved: Bool { phase == .solved }
+    var canSubmit: Bool { canEdit && side == .back && !slots.contains(nil) }
+
+    /// The slot the next block goes to, where the cursor blinks.
+    var nextEmptySlot: Int? { slots.firstIndex(of: nil) }
+
+    func isLocked(_ slot: Int) -> Bool { slot < strategy.givenBlocks }
+
+    func isPlaced(_ part: CodePart) -> Bool { slots.contains(part) }
+
+    func slot(of part: CodePart) -> Int? { slots.firstIndex(of: part) }
 
     // MARK: Intents
 
-    func select(_ language: ProgrammingLenguages) {
+    func flip() {
         guard canEdit else { return }
-        solution = exercise.solution(in: language)
-        blocks = strategy.startingOrder(for: solution)
-        showRetryHint = false
+        side = side == .front ? .back : .front
     }
 
-    func move(fromOffsets source: IndexSet, toOffset destination: Int) {
-        guard canEdit else { return }
-        blocks.move(fromOffsets: source, toOffset: destination)
+    /// Puts a block in a slot. If it came from another slot the two blocks swap places,
+    /// if it came from below the monitor the block that was in the slot goes back down.
+    func place(_ part: CodePart, inSlot slot: Int) {
+        guard canEdit, slots.indices.contains(slot), !isLocked(slot), pool.contains(part) else { return }
+        let origin = self.slot(of: part)
+        guard origin != slot else { return }
+        if let origin, isLocked(origin) { return }
+
+        let previous = slots[slot]
+        slots[slot] = part
+        if let origin { slots[origin] = previous }
         showRetryHint = false   // any change clears the previous result
+    }
+
+    /// Sends the block of a slot back below the monitor.
+    func removeBlock(fromSlot slot: Int) {
+        guard canEdit, slots.indices.contains(slot), !isLocked(slot), slots[slot] != nil else { return }
+        slots[slot] = nil
+        showRetryHint = false
     }
 
     /// Checks the current order and starts the submission. Returns nil if there is nothing to submit.
     @discardableResult
     func submit() -> Bool? {
-        guard canEdit else { return nil }
-        isLastSubmissionCorrect = strategy.isSolved(blocks, for: solution)
+        guard canSubmit else { return nil }
+        isLastSubmissionCorrect = strategy.isSolved(slots, for: solution)
         showRetryHint = false
         phase = .assembling
         return isLastSubmissionCorrect

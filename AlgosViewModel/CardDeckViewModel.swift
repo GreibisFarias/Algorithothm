@@ -1,32 +1,32 @@
 //
-//  SortingDeckViewModel.swift
+//  CardDeckViewModel.swift
 //  Algorithothm
 //
-//  Walks the user through the sorting exercises, one card at a time.
+//  Walks the user through a deck of exercises, one card at a time. Works for any card type.
 //
 
 import Foundation
 import Observation
 
 @Observable
-final class SortingDeckViewModel {
+final class CardDeckViewModel<Exercise: Identifiable> {
 
-    let exercises: [SortingExercise]
+    let exercises: [Exercise]
     private(set) var currentIndex = 0
 
-    init(exercises: [SortingExercise] = SortingExercise.all) {
+    init(exercises: [Exercise]) {
         self.exercises = exercises
     }
 
-    var currentExercise: SortingExercise? {
+    var currentExercise: Exercise? {
         exercises.indices.contains(currentIndex) ? exercises[currentIndex] : nil
     }
 
     var isFinished: Bool { currentExercise == nil }
 
-    /// "2 of 3", or nil once the deck is done.
+    /// "2/10", or nil once the deck is done.
     var progress: String? {
-        isFinished ? nil : "\(currentIndex + 1) of \(exercises.count)"
+        isFinished ? nil : "\(currentIndex + 1)/\(exercises.count)"
     }
 
     // Not wired to FSRS yet, for now rating a card just moves to the next one.
