@@ -7,36 +7,48 @@
 
 import SwiftUI
 
+// The NavigationStack comes from AlgosHomeView, nesting another one here breaks the navigation.
 struct HomeButtons: View {
     var body: some View {
-        NavigationStack{
-            VStack{
-                HStack() {
-                    NavigationLink{
-                       ArchitectureDeck()
-                    }label: {
-                        Rectangle()
-                            .frame(width: 170, height: 190)
-                            .cornerRadius(20)
-                    }
-                    Rectangle()
-                        .frame(width: 170, height: 190)
-                        .cornerRadius(20)
+        VStack{
+            HStack() {
+                NavigationLink{
+                   ArchitectureDeck()
+                }label: {
+                    deckButton("Architecture")
                 }
-                HStack{
-                    Rectangle()
-                        .frame(width: 170, height: 190)
-                        .cornerRadius(20)
-                    Rectangle()
-                        .frame(width: 170, height: 190)
-                        .cornerRadius(20)
+                NavigationLink{
+                    SortingDeck()
+                }label: {
+                    deckButton("Sorting")
                 }
             }
+            HStack{
+                Rectangle()
+                    .frame(width: 170, height: 190)
+                    .cornerRadius(20)
+                Rectangle()
+                    .frame(width: 170, height: 190)
+                    .cornerRadius(20)
+            }
         }
+    }
+
+    private func deckButton(_ title: String) -> some View {
+        Rectangle()
+            .frame(width: 170, height: 190)
+            .cornerRadius(20)
+            .overlay {
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.white)
+            }
     }
 }
 
 #Preview {
-    HomeButtons()
-        .environmentObject(ValidationOfArch())
+    NavigationStack {
+        HomeButtons()
+    }
+    .environmentObject(ValidationOfArch())
 }

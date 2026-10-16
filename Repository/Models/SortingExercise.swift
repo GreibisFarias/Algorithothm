@@ -1,5 +1,5 @@
 //
-//  SortingInteracion.swift
+//  SortingExercise.swift
 //  Algorithothm
 //
 //  Created by Greibis Farias on 29/9/26.
@@ -39,20 +39,6 @@ struct LoopSolution: Identifiable, Hashable {
                 .joined(separator: "\n")
             return CodePart(code: indented, order: index)
         }
-    }
-
-    //Validation funcs of the type
-    //Compares the code and not the ids, so two blocks with the same text can be swapped.
-    func isSolved(_ parts: [CodePart]) -> Bool {
-        parts.map(\.code) == loopBody.map(\.code)
-    }
-
-    func shuffledBody() -> [CodePart] {
-        // if every block has the same text there is no wrong order to start from
-        guard Set(loopBody.map(\.code)).count > 1 else { return loopBody }
-        var shuffled = loopBody
-        repeat { shuffled.shuffle() } while isSolved(shuffled)
-        return shuffled
     }
 
     /// The whole function, as it looks once it is solved.
