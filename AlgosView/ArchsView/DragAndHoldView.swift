@@ -40,7 +40,12 @@ struct DragAndHoldView: View {
                     endPoint: .bottomTrailing
                 )
                 .cornerRadius(60)
+                
+                Button("Reset") {
+                    vmStudy.resetSwiftData()
+                }
             }
+            
             
             // Inyectamos el modelContext a la vista hija
             DragAndHoldTecnicView(modelContext: modelContext)

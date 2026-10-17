@@ -113,6 +113,25 @@ class ArchitectureStudyViewModel: ObservableObject {
         }
     }
     
+    func resetSwiftData() {
+        do {
+            // Borra todos los registros guardados de FlashcardItem
+            try modelContext.delete(model: FlashcardItem.self)
+            try modelContext.save()
+            
+            // Reinicia los estados de la sesión
+            currentIndex = 0
+            isFinished = false
+            
+            // Vuelve a poblar el mazo inicial
+            seedInitialDataIfNeeded()
+            
+            print("🗑️ Base de datos borrada y rellenada exitosamente.")
+        } catch {
+            print("❌ Error al resetear SwiftData: \(error)")
+        }
+    }
+    
 }
     
     

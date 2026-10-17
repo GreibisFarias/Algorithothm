@@ -6,13 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct AlgosHomeView: View {
     @StateObject var validator = ValidationOfArch()
     
+    
     var body: some View {
         
         NavigationStack{
+            
             HomeButtons()
                 
         }
