@@ -10,10 +10,23 @@ import SwiftData
 
 @main
 struct AlgorithothmApp: App {
-  
-    var body: some Scene {
-        WindowGroup {
-            AlgosHomeView()
+    var sharedModelContainer: ModelContainer = {
+            let schema = Schema([
+                FlashcardItem.self
+            ])
+            let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+
+            do {
+                return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            } catch {
+                fatalError("No se pudo crear el ModelContainer de SwiftData: \(error)")
+            }
+        }()
+
+        var body: some Scene {
+            WindowGroup {
+                AlgosHomeView()
+            }
+            .modelContainer(sharedModelContainer) // 👈 Inyecta el contenedor a todo el árbol de vistas
         }
-    }
 }

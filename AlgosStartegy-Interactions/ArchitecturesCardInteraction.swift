@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import Combine
 
-struct architectureModules: Identifiable{
+struct architectureModules:Encodable, Decodable, Identifiable{
     var moduleMustBeConnected: Set<UUID> = []
     var id: UUID = UUID()
     var targetId: [UUID]? = nil
@@ -18,8 +18,6 @@ struct architectureModules: Identifiable{
     var size: CGSize
     
 }
-
-
 
 class ValidationOfArch: ObservableObject {
     @Published var errorMessage: String? = nil

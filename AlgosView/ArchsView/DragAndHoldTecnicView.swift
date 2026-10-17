@@ -8,15 +8,21 @@
 import SwiftUI
 import Combine
 import SwiftFSRS
+import SwiftData
 
 
 
 struct DragAndHoldTecnicView: View {
-    var vm = GetDataArchMock()
     var claseDrag = ArrowDrawning()
-    @StateObject var vmStudy = ArchitectureStudyViewModel()
+    @StateObject private var vmStudy: ArchitectureStudyViewModel
+    @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var validator: ValidationOfArch
-    
+
+    init(modelContext: ModelContext){
+      _vmStudy = StateObject(wrappedValue: ArchitectureStudyViewModel(modelContext: modelContext))
+
+    }
+
     @State var moduleWhereArrowIs: UUID? = nil
     @State var whereYouLetTheArrow: CGPoint? = nil
     
@@ -26,7 +32,7 @@ struct DragAndHoldTecnicView: View {
                 Text("🎉 ¡Terminaste las arquitecturas de hoy!")
                     .font(.largeTitle)
                     .bold()
-            } else if !vmStudy.architechtureCards.isEmpty {
+            } else if !vmStudy.todayArchitectureCards.isEmpty {
                 // Obtenemos los módulos mutables de la tarjeta actual
                 let modules = vmStudy.activeArchitectureModules
                 
@@ -115,6 +121,11 @@ struct DragAndHoldTecnicView: View {
 }
 
 #Preview {
-    DragAndHoldTecnicView()
-        .environmentObject(ValidationOfArch())
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(for: FlashcardItem.self, configurations: config)
+        
+        // 2. Inyectar el context del contenedor de pruebas
+        return DragAndHoldTecnicView(modelContext: container.mainContext)
+            .environmentObject(ValidationOfArch())
+            .modelContainer(container)
 }

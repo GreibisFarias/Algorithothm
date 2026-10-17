@@ -6,15 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ArchitectureDeck: View {
+    @Environment(\.modelContext) private var modelContex
     @StateObject var validition2 = ValidationOfArch()
     var body: some View {
         NavigationStack{
             VStack{
-                DragAndHoldView()
-                
-                Button("next", action: validition2.nextCard)
+                DragAndHoldView(modelContext: modelContex)
+           
             }
             
             .environmentObject(validition2)
