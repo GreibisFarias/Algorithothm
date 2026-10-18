@@ -197,3 +197,5 @@ class ValidationOfArch: ObservableObject {
         }
     }
 }
+
+
