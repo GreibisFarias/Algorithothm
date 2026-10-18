@@ -116,35 +116,3 @@ struct DragAndHoldTecnicView: View {
         .environmentObject(ValidationOfArch())
 }
 
-////MARK: Function that draws the arrows
-//extension LoadedExerciseView {
-//        
-//        func drawArrow(from start: CGPoint, to end: CGPoint, in context: GraphicsContext) {
-//            var path = Path()
-//            path.move(to: start)
-//            path.addLine(to: end)
-//            context.stroke(path, with: .color(.black), lineWidth: 3)
-//            
-//            let angle = atan2(end.y - start.y, end.x - start.x)
-//            let arrowLength: CGFloat = 15
-//            let arrowAngle: CGFloat = .pi / 6
-//            
-//            var arrowHead = Path()
-//            arrowHead.move(to: end)
-//            arrowHead.addLine(to: CGPoint(
-//                x: end.x - arrowLength * cos(angle - arrowAngle),
-//                y: end.y - arrowLength * sin(angle - arrowAngle)
-//            ))
-//            arrowHead.move(to: end)
-//            arrowHead.addLine(to: CGPoint(
-//                x: end.x - arrowLength * cos(angle + arrowAngle),
-//                y: end.y - arrowLength * sin(angle + arrowAngle)
-//            ))
-//            context.stroke(arrowHead, with: .color(.blue), lineWidth: 3)
-//        }
-//        
-//}
-//#Preview {
-//    DragAndHoldTecnicView()
-//        .environmentObject(ValidationOfArch())
-//}
