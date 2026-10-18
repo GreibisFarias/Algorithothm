@@ -4,284 +4,130 @@
 //
 //  Created by Greibis Farias on 29/9/26.
 //
+//  "Tipo 2 · Aprende y arma" card: a front that teaches with a solved example and a back where
+//  the user builds a similar function. Flipping, submitting and the animations live here.
+//
 
 import SwiftUI
 
-// MARK: - View (This view is just to check the mechanism I have created, of course we will change this when Jose give us the design.)
 struct SortingInteractionCard: View {
 
-    enum Phase: Equatable {
-        case editing
-        case assembling                 // blocks are flying into the function panel
-        case result(isCorrect: Bool)    // panel turns green or red
-        case feedback                   // "Good job" + difficultad rating
-        case solved
-    }
+    @State private var viewModel: SortingCardViewModel
+    private let progress: String?
+    private let onClose: () -> Void
 
-    typealias Difficulty = ExerciseDifficulty
+    // Animation only: where each slot is and which blocks already reached the big monitor.
+    @State private var slotFrames: [Int: CGRect] = [:]
+    @State private var landed: Set<Int> = []
 
-
-    let exercise: SortingExercise
-    // Not wired to anything yet, this is where the FSRS rating will go.
-    var onRate: (Difficulty) -> Void
-
-    @State private var solution: LoopSolution
-    @State private var blocks: [CodePart]
-    @State private var phase: Phase = .editing
-    @State private var showRetryHint = false
-
-    // Frames (global) of the blocks in the list and of their slots in the function panel,
-    // used to make copies of the blocks float between them.
-    @State private var rowFrames: [UUID: CGRect] = [:]
-    @State private var slotFrames: [UUID: CGRect] = [:]
-    @State private var overlayOrigin: CGPoint = .zero
-    @State private var landed: Set<UUID> = []
-
-    @Environment(\.codeTheme) private var codeTheme
-
-    init(exercise: SortingExercise, language: ProgrammingLenguages = .swift, onRate: @escaping (Difficulty) -> Void = { _ in }) {
-        self.exercise = exercise
-        self.onRate = onRate
-        let solution = exercise.solution(in: language)
-        _solution = State(initialValue: solution)
-        _blocks = State(initialValue: solution.shuffledBody())
+    /// - Parameters:
+    ///   - language: the one the user picked, the card doesn't let them change it.
+    ///   - progress: position in the deck, shown in the header ("1/10").
+    ///   - onClose: the back button of the front side.
+    init(
+        exercise: SortingExercise,
+        language: ProgrammingLenguages,
+        progress: String? = nil,
+        onRate: @escaping (ExerciseDifficulty) -> Void = { _ in },
+        onClose: @escaping () -> Void = {}
+    ) {
+        _viewModel = State(initialValue: SortingCardViewModel(exercise: exercise, language: language, onRate: onRate))
+        self.progress = progress
+        self.onClose = onClose
     }
 
     var body: some View {
         ZStack {
-            List {
-                Section {
-                    Text(exercise.title).font(.headline)
-                    Text(exercise.description).foregroundStyle(.secondary)
+            RetroBackground()
 
-                    LanguagePicker(languages: exercise.languages, selection: languageSelection)
-                        .disabled(phase != .editing)
-                }
+            VStack(spacing: 18) {
+                RetroCardHeader(
+                    theme: .aprendeYArma,
+                    stepLabel: stepLabel,
+                    steps: 2,
+                    currentStep: viewModel.side == .front ? 0 : 1,
+                    backLabel: viewModel.side == .front ? "Volver al inicio" : "Volver al frente de la tarjeta",
+                    onBack: back
+                )
+                .padding(.horizontal, 24)
 
-                Section("Examples") {
-                    ForEach(exercise.examples, id: \.self) { example in
-                        Text(example).font(.system(.footnote, design: .monospaced))
-                    }
-                }
+                ZStack {
+                    SortingCardFront(viewModel: viewModel, onFlip: flip)
+                        .modifier(CardFace(angle: viewModel.side == .front ? 0 : -180))
 
-                // The setup and the ending are fixed, only the loop body can be moved
-                Section {
-                    ForEach(blocks) { part in
-                        codeText(part.code)
-                            // while the copy is flying, the original stays hidden in its row
-                            .opacity(isOverlayVisible ? 0 : 1)
-                            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
-                                rowFrames[part.id] = $0
-                            }
-                    }
-                    .onMove { from, to in
-                        blocks.move(fromOffsets: from, toOffset: to)
-                        showRetryHint = false   // any change clears the previous result
-                    }
-                    .moveDisabled(phase == .solved)
-                } header: {
-                    fixedCode(solution.setup, caption: "Loop body — drag to reorder")
-                } footer: {
-                    fixedCode(solution.ending)
-                }
-
-                Section {
-                    Button(action: submit) {
-                        Text(buttonTitle).frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(phase == .solved ? .green : .accentColor)
-                    .disabled(phase != .editing)
-                    .listRowBackground(Color.clear)
-
-                    if showRetryHint {
-                        Text("Not quite. Check which line has to come first and try again.")
-                            .foregroundStyle(.red)
-                            .font(.footnote)
-                    }
+                    SortingCardBack(viewModel: viewModel, slotFrames: $slotFrames, isSubmitting: isOverlayVisible, onSubmit: submit)
+                        .modifier(CardFace(angle: viewModel.side == .back ? 0 : 180))
                 }
             }
+            .padding(.top, 12)
 
             if isOverlayVisible {
-                submissionOverlay
+                SortingSubmissionOverlay(viewModel: viewModel, landed: landed, sourceFrames: slotFrames)
                     .transition(.opacity)
             }
         }
-
+        .coordinateSpace(.sortingCard)
+        .foregroundStyle(Retro.text)
         //This would add like vibrations when the user makes a mistake or losses. Jus thought it could be cool to add that.
-        .sensoryFeedback(.success, trigger: phase == .result(isCorrect: true))
-        .sensoryFeedback(.error, trigger: phase == .result(isCorrect: false))
+        .sensoryFeedback(.success, trigger: viewModel.phase == .result(isCorrect: true))
+        .sensoryFeedback(.error, trigger: viewModel.phase == .result(isCorrect: false))
     }
 
-    // MARK: Overlay
-
     private var isOverlayVisible: Bool {
-        switch phase {
+        switch viewModel.phase {
         case .editing, .solved: false
         case .assembling, .result, .feedback: true
         }
     }
 
-    private var submissionOverlay: some View {
-        ZStack {
-            // Covers the whole card, which also blocks any interaction during the animation
-            Color.black.opacity(0.45)
-                .ignoresSafeArea()
-
-            if phase == .feedback {
-                DifficultyRatingView(onRate: rate)
-                    .transition(.scale(scale: 0.9).combined(with: .opacity))
-            } else {
-                functionPanel
-                    .transition(.opacity)
-
-                ForEach(blocks) { part in
-                    flyingBlock(part)
-                }
-            }
-        }
-        .onGeometryChange(for: CGPoint.self) { $0.frame(in: .global).origin } action: {
-            overlayOrigin = $0
-        }
-    }
-
-    private var functionPanel: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Your function")
-                .font(.headline)
-
-            VStack(alignment: .leading, spacing: 4) {
-                codeText(solution.setup)
-
-                // Invisible slots: they give the flying blocks their final position
-                ForEach(blocks) { part in
-                    codeText(part.code)
-                        .hidden()
-                        .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
-                            slotFrames[part.id] = $0
-                        }
-                }
-
-                codeText(solution.ending)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(12)
-            .background(codeTheme.background, in: RoundedRectangle(cornerRadius: 8))
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(panelBackground, in: RoundedRectangle(cornerRadius: 12))
-        .overlay {
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(panelBorder, lineWidth: 2)
-        }
-        .padding(.horizontal, 20)
-        .animation(.easeInOut(duration: 0.3), value: phase)
-    }
-
-    @ViewBuilder
-    private func flyingBlock(_ part: CodePart) -> some View {
-        let isLanded = landed.contains(part.id)
-        // A row that is scrolled off screen has no frame, so its block just fades in at its slot
-        let source = rowFrames[part.id]
-        if let frame = (isLanded ? slotFrames[part.id] : source) ?? slotFrames[part.id] {
-            codeText(part.code)
-                .frame(width: frame.width, height: frame.height, alignment: .leading)
-                .position(x: frame.midX - overlayOrigin.x, y: frame.midY - overlayOrigin.y)
-                .opacity(isLanded || source != nil ? 1 : 0)
-        }
-    }
-
-    private func codeText(_ code: String) -> some View {
-        CodeText(code, language: solution.language)
-            .font(.footnote)
-            .lineLimit(nil)
-    }
-
-    /// Code the user can't move, shown above and below the loop body.
-    private func fixedCode(_ code: String, caption: String? = nil) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            codeText(code)
-                .opacity(0.75)
-            if let caption {
-                Text(caption)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .textCase(nil)
-        .padding(.vertical, 4)
-    }
-
-    private var buttonTitle: String {
-        phase == .solved ? "Solved ✓" : "Check answer"
-    }
-
-    private var panelBackground: Color {
-        switch phase {
-        case .result(isCorrect: true): Color.green.opacity(0.25)
-        case .result(isCorrect: false): Color.red.opacity(0.25)
-        default: Color(.secondarySystemGroupedBackground)
-        }
-    }
-
-    private var panelBorder: Color {
-        switch phase {
-        case .result(isCorrect: true): .green
-        case .result(isCorrect: false): .red
-        default: .clear
-        }
-    }
-
-    private var languageSelection: Binding<ProgrammingLenguages> {
-        Binding(get: { solution.language }, set: select)
+    /// "1/10 · FRENTE"
+    private var stepLabel: String {
+        let side = viewModel.side == .front ? "FRENTE" : "REVERSO"
+        guard let progress else { return side }
+        return "\(progress) · \(side)"
     }
 
     // MARK: Actions
 
-    private func select(_ language: ProgrammingLenguages) {
-        solution = exercise.solution(in: language)
-        blocks = solution.shuffledBody()
-        showRetryHint = false
+    private func back() {
+        if viewModel.side == .back {
+            flip()
+        } else {
+            onClose()
+        }
+    }
+
+    private func flip() {
+        withAnimation(.easeInOut(duration: 0.5)) { viewModel.flip() }
     }
 
     private func submit() {
-        let isCorrect = solution.isSolved(blocks)
-        showRetryHint = false
         landed = []
-        withAnimation(.easeOut(duration: 0.25)) { phase = .assembling }
+        guard let isCorrect = withAnimation(.easeOut(duration: 0.25), { viewModel.submit() }) else { return }
 
         Task {
             // let the panel appear and measure its slots before the blocks start flying
             await pause(0.35)
 
-            // the blocks float one by one, in the order the user picked
-            for part in blocks {
-                withAnimation(.spring(duration: 0.5, bounce: 0.2)) { _ = landed.insert(part.id) }
+            // the blocks float one by one, from the first slot to the last
+            for index in viewModel.slots.indices {
+                withAnimation(.spring(duration: 0.5, bounce: 0.2)) { _ = landed.insert(index) }
                 await pause(0.25)
             }
             await pause(0.4)
 
-            withAnimation { phase = .result(isCorrect: isCorrect) }
+            withAnimation { viewModel.revealResult() }
             await pause(1.0)
 
             if isCorrect {
-                withAnimation(.spring(duration: 0.4)) { phase = .feedback }
+                withAnimation(.spring(duration: 0.4)) { viewModel.finishSubmission() }
             } else {
-                // blocks go back to their rows, keeping the order the user had
+                // blocks go back to their slots, keeping the order the user had
                 withAnimation(.spring(duration: 0.5, bounce: 0.1)) { landed = [] }
                 await pause(0.5)
-                withAnimation(.easeOut(duration: 0.25)) {
-                    phase = .editing
-                    showRetryHint = true
-                }
+                withAnimation(.easeOut(duration: 0.25)) { viewModel.finishSubmission() }
             }
         }
-    }
-
-    private func rate(_ difficulty: Difficulty) {
-        onRate(difficulty)
-        withAnimation { phase = .solved }
     }
 
     private func pause(_ seconds: Double) async {
@@ -289,14 +135,34 @@ struct SortingInteractionCard: View {
     }
 }
 
-#Preview("Two Sum") {
-    SortingInteractionCard(exercise: .twoSum)
+/// One face of the card. It turns around the vertical axis and hides once it is edge-on,
+/// so the other face shows up for the second half of the turn.
+private struct CardFace: ViewModifier, Animatable {
+    var angle: Double
+
+    nonisolated var animatableData: Double {
+        get { angle }
+        set { angle = newValue }
+    }
+
+    func body(content: Content) -> some View {
+        let isFacingUser = abs(angle) < 90
+        content
+            .opacity(isFacingUser ? 1 : 0)
+            .rotation3DEffect(.degrees(angle), axis: (x: 0, y: 1, z: 0), perspective: 0.4)
+            .allowsHitTesting(isFacingUser)
+            .accessibilityHidden(!isFacingUser)
+    }
 }
 
-#Preview("Reverse Linked List · Python") {
-    SortingInteractionCard(exercise: .reverseLinkedList, language: .python)
+#Preview("Filtrar pares · Swift") {
+    SortingInteractionCard(exercise: .evenWords, language: .swift, progress: "1/10")
 }
 
-#Preview("Climbing Stairs · Java") {
-    SortingInteractionCard(exercise: .climbingStairs, language: .java)
+#Preview("FizzBuzz · Python") {
+    SortingInteractionCard(exercise: .fizzBuzz, language: .python, progress: "5/10")
+}
+
+#Preview("Dos sumas · Java") {
+    SortingInteractionCard(exercise: .twoSum, language: .java, progress: "7/10")
 }

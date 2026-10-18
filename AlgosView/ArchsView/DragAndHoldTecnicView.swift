@@ -10,8 +10,6 @@ import Combine
 import SwiftFSRS
 import SwiftData
 
-
-
 struct DragAndHoldTecnicView: View {
     var claseDrag = ArrowDrawning()
     @StateObject private var vmStudy: ArchitectureStudyViewModel
@@ -129,3 +127,4 @@ struct DragAndHoldTecnicView: View {
             .environmentObject(ValidationOfArch())
             .modelContainer(container)
 }
+
