@@ -12,7 +12,13 @@ import SwiftUI
 struct HomeButtons: View {
     var body: some View {
         VStack{
+            NavigationLink{
+                RandomDeck()
+            }label: {
+                randomButton("Mix deck")
+            }
             HStack() {
+             
                 NavigationLink{
                    ArchitectureDeck()
                 }label: {
@@ -45,6 +51,17 @@ struct HomeButtons: View {
                 Text(title)
                     .font(.headline)
                     .foregroundStyle(.white)
+            }
+    }
+    
+    private func randomButton(_ title: String) -> some View {
+        Rectangle()
+            .frame(width: 345, height: 120)
+            .cornerRadius(20)
+            .overlay{
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.green)
             }
     }
 }

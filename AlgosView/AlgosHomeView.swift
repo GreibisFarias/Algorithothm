@@ -22,7 +22,6 @@ struct AlgosHomeView: View {
                             SettingsMenuButton { isMenuOpen = true }
                         }
                     }
-
             }
             .environmentObject(validator)
 
