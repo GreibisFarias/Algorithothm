@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SwiftFSRS
-
 import SwiftData
 
 struct DragAndHoldView: View {
