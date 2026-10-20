@@ -8,21 +8,10 @@
 import SwiftUI
 
 // The NavigationStack comes from AlgosHomeView, nesting another one here breaks the navigation.
+// The language is chosen in the onboarding and changed from the menu (SettingsMenu).
 struct HomeButtons: View {
-    // Temporary place to pick the language until there is an onboarding or settings screen.
-    @AppStorage(ProgrammingLenguages.storageKey) private var language: ProgrammingLenguages = .swift
-
     var body: some View {
         VStack{
-            Picker("Language", selection: $language) {
-                ForEach(ProgrammingLenguages.allCases) { language in
-                    Text(language.rawValue).tag(language)
-                }
-            }
-            .pickerStyle(.segmented)
-            .frame(width: 348)
-            .padding(.bottom, 8)
-
             HStack() {
                 NavigationLink{
                    ArchitectureDeck()

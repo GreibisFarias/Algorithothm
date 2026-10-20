@@ -28,6 +28,8 @@ final class MultipleChoiceCardViewModel {
     private(set) var selectedID: ChoiceOption.ID?
     private(set) var wrongIDs: Set<ChoiceOption.ID> = []
     private(set) var phase: Phase = .answering
+    /// Questions answered right without a wrong pick before.
+    private(set) var correctAtFirstTry = 0
 
     private let strategy: MultipleChoiceStrategy
     // Not wired to anything yet, this is where the FSRS rating will go.
@@ -58,6 +60,11 @@ final class MultipleChoiceCardViewModel {
     var isSolved: Bool { phase == .solved }
     var showRetryHint: Bool { phase == .answering && !wrongIDs.isEmpty }
 
+    /// Line of the result screen, "2 de 2 correctas".
+    var resultSummary: String {
+        "\(correctAtFirstTry) de \(questionCount) correctas"
+    }
+
     func state(of option: ChoiceOption) -> RetroOptionState {
         if wrongIDs.contains(option.id) { return .wrong }
         if phase != .answering, strategy.isCorrect(option) { return .correct }
@@ -77,6 +84,7 @@ final class MultipleChoiceCardViewModel {
     func submit() -> Bool? {
         guard canSubmit, let selected = options.first(where: { $0.id == selectedID }) else { return nil }
         if strategy.isCorrect(selected) {
+            if wrongIDs.isEmpty { correctAtFirstTry += 1 }
             phase = .correct
             return true
         }

@@ -3,7 +3,7 @@
 //  Algorithothm
 //
 //  Shown while the answer is checked: copies of the blocks float from their slots into a
-//  bigger monitor with the whole function, its screen turns green or red, then the rating appears.
+//  bigger monitor with the whole function, and its screen turns green or red.
 //
 
 import SwiftUI
@@ -25,16 +25,11 @@ struct SortingSubmissionOverlay: View {
             Color.black.opacity(0.8)
                 .ignoresSafeArea()
 
-            if viewModel.phase == .feedback {
-                RetroRatingView(theme: .aprendeYArma, onRate: rate)
-                    .transition(.scale(scale: 0.9).combined(with: .opacity))
-            } else {
-                functionPanel
-                    .transition(.opacity)
+            functionPanel
+                .transition(.opacity)
 
-                ForEach(viewModel.slots.indices, id: \.self) { index in
-                    flyingBlock(index)
-                }
+            ForEach(viewModel.slots.indices, id: \.self) { index in
+                flyingBlock(index)
             }
         }
         .onGeometryChange(for: CGPoint.self) { $0.frame(in: .sortingCard).origin } action: {
@@ -106,9 +101,5 @@ struct SortingSubmissionOverlay: View {
         case .result(isCorrect: false): Retro.error
         default: .clear
         }
-    }
-
-    private func rate(_ difficulty: ExerciseDifficulty) {
-        withAnimation { viewModel.rate(difficulty) }
     }
 }

@@ -23,9 +23,16 @@ struct AlgorithothmApp: App {
             }
         }()
 
+        // The onboarding is only shown the first time the app opens.
+        @AppStorage(UserSettings.hasCompletedOnboardingKey) private var hasCompletedOnboarding = false
+
         var body: some Scene {
             WindowGroup {
-                AlgosHomeView()
+                if hasCompletedOnboarding {
+                    AlgosHomeView()
+                } else {
+                    OnboardingView()
+                }
             }
             .modelContainer(sharedModelContainer) // 👈 Inyecta el contenedor a todo el árbol de vistas
         }

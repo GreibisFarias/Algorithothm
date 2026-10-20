@@ -65,6 +65,11 @@ struct SortingInteractionCard: View {
                 SortingSubmissionOverlay(viewModel: viewModel, landed: landed, sourceFrames: slotFrames)
                     .transition(.opacity)
             }
+
+            if viewModel.phase == .feedback {
+                RetroResultView(theme: .aprendeYArma, summary: viewModel.resultSummary, onRate: rate, onClose: onClose)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
         .coordinateSpace(.sortingCard)
         .foregroundStyle(Retro.text)
@@ -75,8 +80,8 @@ struct SortingInteractionCard: View {
 
     private var isOverlayVisible: Bool {
         switch viewModel.phase {
-        case .editing, .solved: false
-        case .assembling, .result, .feedback: true
+        case .editing, .feedback, .solved: false
+        case .assembling, .result: true
         }
     }
 
@@ -128,6 +133,10 @@ struct SortingInteractionCard: View {
                 withAnimation(.easeOut(duration: 0.25)) { viewModel.finishSubmission() }
             }
         }
+    }
+
+    private func rate(_ difficulty: ExerciseDifficulty) {
+        withAnimation { viewModel.rate(difficulty) }
     }
 
     private func pause(_ seconds: Double) async {

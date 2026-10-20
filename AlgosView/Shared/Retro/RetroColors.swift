@@ -31,6 +31,12 @@ enum Retro {
     static let phosphor = Color(retroHex: 0x4CE07A)
     /// Solid shadow below a green button.
     static let phosphorShadow = Color(retroHex: 0x1F7A3E)
+    /// Gold: achievements, "¡Muy fácil!", reminders.
+    static let gold = Color(retroHex: 0xEAD18E)
+    /// Light blue of "Tipo 3 · Arquitectura" and the avatar.
+    static let sky = Color(retroHex: 0xB9D7DD)
+    /// Shadow side of `sky`.
+    static let skyShade = Color(retroHex: 0x7FA3AD)
 
     // MARK: Panels
 
@@ -38,6 +44,8 @@ enum Retro {
     static let panel = Color(retroHex: 0x2D192C)
     /// Outline of the dark boxes.
     static let panelStroke = Color(retroHex: 0x69283B)
+    /// Dark layer over the screen behind a side menu.
+    static let dim = Color(retroHex: 0x0A0610).opacity(0.72)
     /// Text of a disabled button ("Elige una opción").
     static let disabledText = Color(retroHex: 0xA99BB3)
     /// Something used or disabled: outline...
