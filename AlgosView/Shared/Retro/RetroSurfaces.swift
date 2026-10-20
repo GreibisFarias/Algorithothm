@@ -12,15 +12,30 @@ struct RetroBackground: View {
     var body: some View {
         Retro.background
             .overlay {
-                if let image = UIImage(named: "RetroLibrary.jpg") {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .opacity(0.14)
-                }
+                RetroImage("RetroLibrary.jpg")
+                    .scaledToFill()
+                    .opacity(0.14)
             }
             .clipped()
             .ignoresSafeArea()
+    }
+}
+
+/// An image of Algorithothm/Resources, by its file name with the extension ("RetroMascot.png").
+/// Resizable; shows nothing if the file is missing.
+struct RetroImage: View {
+    let name: String
+
+    init(_ name: String) {
+        self.name = name
+    }
+
+    var body: some View {
+        if let image = UIImage(named: name) {
+            Image(uiImage: image)
+                .resizable()
+                .interpolation(.none)   // keeps the pixel art sharp
+        }
     }
 }
 

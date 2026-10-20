@@ -87,7 +87,8 @@ struct MultipleChoiceCard: View {
             .padding(.top, 12)
 
             if viewModel.phase == .feedback {
-                RetroRatingOverlay(theme: .predice, onRate: rate)
+                RetroResultView(theme: .predice, summary: viewModel.resultSummary, onRate: rate, onClose: onClose)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
         .foregroundStyle(Retro.text)

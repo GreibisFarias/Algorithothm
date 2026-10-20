@@ -35,6 +35,8 @@ final class SortingCardViewModel {
     private(set) var slots: [CodePart?]
     private(set) var phase: Phase = .editing
     private(set) var showRetryHint = false
+    /// How many times the user checked the function.
+    private(set) var attempts = 0
 
     private let strategy: SortingStrategy
     // Not wired to anything yet, this is where the FSRS rating will go.
@@ -64,6 +66,11 @@ final class SortingCardViewModel {
     var canEdit: Bool { phase == .editing }
     var isSolved: Bool { phase == .solved }
     var canSubmit: Bool { canEdit && side == .back && !slots.contains(nil) }
+
+    /// Line of the result screen.
+    var resultSummary: String {
+        attempts <= 1 ? "¡Lo armaste a la primera!" : "Lo armaste en \(attempts) intentos"
+    }
 
     /// The slot the next block goes to, where the cursor blinks.
     var nextEmptySlot: Int? { slots.firstIndex(of: nil) }
@@ -107,6 +114,7 @@ final class SortingCardViewModel {
     func submit() -> Bool? {
         guard canSubmit else { return nil }
         isLastSubmissionCorrect = strategy.isSolved(slots, for: solution)
+        attempts += 1
         showRetryHint = false
         phase = .assembling
         return isLastSubmissionCorrect

@@ -23,7 +23,7 @@
 //                     Button("Comprobar", action: check).buttonStyle(RetroCardTheme.myType.button)
 //                 }
 //             }
-//             if isFinished { RetroRatingOverlay(theme: .myType, onRate: onRate) }
+//             if isFinished { RetroResultView(theme: .myType, summary: "1 de 1", onRate: onRate, onClose: onClose) }
 //         }
 //
 //  3. Put it in a deck: RetroDeck(exercises: ..., theme: .myType) { exercise, deck in MyCard(...) }.
@@ -100,12 +100,13 @@ import SwiftUI
                 Button("Desactivado") {}
                     .buttonStyle(RetroButtonStyle.phosphor)
                     .disabled(true)
-
-                RetroRatingView(theme: .predice) { _ in }
-                    .padding(.horizontal, -24)
             }
             .foregroundStyle(Retro.text)
             .padding(24)
         }
     }
+}
+
+#Preview("Result") {
+    RetroResultView(theme: .aprendeYArma, summary: "¡Lo armaste a la primera!", onRate: { _ in }, onClose: {})
 }
