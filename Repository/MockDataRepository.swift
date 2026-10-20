@@ -28,7 +28,7 @@ enum Dificulties{
 enum TypeOfCard{
     case ArchitechtureCard([architectureModules])
     case SortindCard(SortingExercise)
-    case MultipleAnswerCard
+    case MultipleAnswerCard(MultipleChoiceExercise)
 }
 
 struct flashcard {
@@ -76,29 +76,29 @@ class ArchDataSource {
     
     // VIPER
     var viperViewModule = architectureModules(
-        position: CGPoint(x: 100, y: 100),
+        position: CGPoint(x: 80, y: 100),
         name: "View",
-        size: CGSize(width: 150, height: 100)
+        size: CGSize(width: 120, height: 80)
     )
     var viperPresenterModule = architectureModules(
-        position: CGPoint(x: 300, y: 100),
+        position: CGPoint(x: 270, y: 100),
         name: "Presenter",
-        size: CGSize(width: 150, height: 100)
+        size: CGSize(width: 120, height: 80)
     )
     var viperInteractorModule = architectureModules(
-        position: CGPoint(x: 300, y: 300),
+        position: CGPoint(x: 150, y: 300),
         name: "Interactor",
-        size: CGSize(width: 150, height: 100)
+        size: CGSize(width: 120, height: 80)
     )
     var viperEntityModule = architectureModules(
-        position: CGPoint(x: 300, y: 500),
+        position: CGPoint(x: 170, y: 500),
         name: "Entity",
-        size: CGSize(width: 150, height: 100)
+        size: CGSize(width: 120, height: 80)
     )
     var viperRouterModule = architectureModules(
-        position: CGPoint(x: 100, y: 300),
+        position: CGPoint(x: 100, y: 200),
         name: "Router",
-        size: CGSize(width: 150, height: 100)
+        size: CGSize(width: 120, height: 80)
     )
 
     func createViperRelations() {
@@ -119,8 +119,8 @@ class allTheCard{
         var mvvmArchsCard = flashcard(difficulty: .Easy, cardType: .ArchitechtureCard(archs.mvvm), prompt: "Hola")
         var viperArchsCard = flashcard(difficulty: .Medium, cardType: .ArchitechtureCard(archs.viper), prompt: "Adios")
         var sortFirst = flashcard(difficulty: .Easy, cardType: .SortindCard(.climbingStairs), prompt: "jaja")
-    
-    lazy var allaTheCards: [flashcard] = [mvvmArchsCard, viperArchsCard, sortFirst]
+        var evenWords = flashcard(difficulty: .Easy, cardType: .MultipleAnswerCard(.countEvens))
+        lazy var allaTheCards: [flashcard] = [mvvmArchsCard, viperArchsCard, sortFirst, evenWords]
 }
 
 
