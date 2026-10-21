@@ -29,9 +29,11 @@ struct AlgorithothmApp: App {
 
         var body: some Scene {
             WindowGroup {
-                if hasCompletedOnboarding 
-        AlgosHomeView(modelContext: modelContext)
-
+                if hasCompletedOnboarding {
+                    AlgosHomeView(modelContext: modelContext)
+                } else{
+                    OnboardingView()
+                }
             }
             .modelContainer(sharedModelContainer) // 👈 Inyecta el contenedor a todo el árbol de vistas
         }
