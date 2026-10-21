@@ -29,6 +29,7 @@ struct AlgorithothmApp: App {
 
         var body: some Scene {
             WindowGroup {
+                if hasCompletedOnboarding 
         AlgosHomeView(modelContext: modelContext)
 
             }
