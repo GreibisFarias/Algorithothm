@@ -16,19 +16,21 @@ struct AlgosHomeView: View {
     
     init(modelContext: ModelContext){
       _vmStudy = StateObject(wrappedValue: ArchitectureStudyViewModel(modelContext: modelContext))
-
     }
     var body: some View {
-        
-        NavigationStack{
-            
-            HomeButtons(modelContext: modelContext)
+        ZStack{
+            NavigationStack{
                 
-
+                HomeButtons(modelContext: modelContext)
+    
+                
+            }
+            // the home is light, its dark status bar text would be lost on the menu
+            SettingsMenu(isPresented: $isMenuOpen)
         }
-        // the home is light, its dark status bar text would be lost on the menu
         .statusBarHidden(isMenuOpen)
     }
+        
 }
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
