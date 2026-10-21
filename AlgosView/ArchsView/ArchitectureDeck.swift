@@ -17,7 +17,7 @@ struct ArchitectureDeck: View {
                 DragAndHoldView(modelContext: modelContex)
            
             }
-            
+    
             .environmentObject(validition2)
         }
     }

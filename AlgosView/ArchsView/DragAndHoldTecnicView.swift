@@ -15,6 +15,7 @@ struct DragAndHoldTecnicView: View {
     @StateObject private var vmStudy: ArchitectureStudyViewModel
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var validator: ValidationOfArch
+    
 
     init(modelContext: ModelContext){
       _vmStudy = StateObject(wrappedValue: ArchitectureStudyViewModel(modelContext: modelContext))
@@ -30,7 +31,7 @@ struct DragAndHoldTecnicView: View {
                 Text("🎉 ¡Terminaste las arquitecturas de hoy!")
                     .font(.largeTitle)
                     .bold()
-            } else if !vmStudy.todayArchitectureCards.isEmpty {
+            } else if !vmStudy.activeArchitectureModules.isEmpty {
                 // Obtenemos los módulos mutables de la tarjeta actual
                 let modules = vmStudy.activeArchitectureModules
                 
@@ -90,17 +91,8 @@ struct DragAndHoldTecnicView: View {
                     }
                 }
                 .coordinateSpace(name: "Lienzo")
-                .alert("Well done ", isPresented: $validator.showCongratsAlert) {
-                    Button("next") {
-                        vmStudy.completeCurrentCard(rating: .good)
-                    }
-//                    NavigationStack{
-//                        NavigationLink{
-//                            FeedBackView()
-//                        }label: {
-//                            Text("Feddback")
-//                        }
-//                    }
+                .sheet(isPresented: $validator.showCongratsAlert) {
+                    FeedBackView(studyVM: vmStudy)
                 }
                 .coordinateSpace(name: "Lienzo") // Mismo espacio que el DragGesture
                 .alert("Respuesta Incorrecta", isPresented: $validator.showErrorAlert) {

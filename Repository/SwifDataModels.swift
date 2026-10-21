@@ -20,7 +20,9 @@ public class FlashcardItem {
     public var isArchitecture: Bool
     
     // Almacenamiento local de los módulos de arquitectura para la UI interactiva
+    public var sortingExrciseID: String?
     public var activeModulesData: Data?
+    public var multipleChoiceExerciseId: String?
     
     // Propiedades nativas requeridas por el algoritmo FSRS para SQLite
     public var due: Date
@@ -62,7 +64,7 @@ public class FlashcardItem {
     }
     
     // Propiedad computada para leer/escribir fácilmente los módulos interactivos de la vista
-     var activeModules: [architectureModules] {
+    var activeModules: [architectureModules] {
         get {
             guard let activeModulesData,
                   let decoded = try? JSONDecoder().decode([architectureModules].self, from: activeModulesData) else {
@@ -82,13 +84,23 @@ public class FlashcardItem {
         self.difficultyRaw = String(describing: originalCard.difficulty)
         
         // Extraemos y guardamos los módulos si la tarjeta es de Arquitectura
-        if case .ArchitechtureCard(let modules) = originalCard.cardType {
+        switch originalCard.cardType {
+            
+        case .ArchitechtureCard(let modules):
             self.isArchitecture = true
             self.cardTypeRaw = "Architecture"
             self.activeModulesData = try? JSONEncoder().encode(modules)
-        } else {
+            
+        case .SortindCard(let sortingExercise):
             self.isArchitecture = false
-            self.cardTypeRaw = "Other"
+            self.cardTypeRaw = "Sorting"
+            self.activeModulesData = nil
+            self.sortingExrciseID = sortingExercise.id
+            
+        case .MultipleAnswerCard(let multipleChoiceExercise):
+            self.isArchitecture = false
+            self.multipleChoiceExerciseId = multipleChoiceExercise.id
+            self.cardTypeRaw = "MultipleCard"
             self.activeModulesData = nil
         }
         
@@ -102,5 +114,17 @@ public class FlashcardItem {
         self.lapses = originalCard.card.lapses
         self.statusRate = originalCard.card.status.rawValue
         self.lastReview = originalCard.card.lastReview
+    }
+}
+
+extension FlashcardItem{
+    var sortingExercise: SortingExercise? {
+        guard cardTypeRaw == "Sorting", let exerciseID = sortingExrciseID else { return nil }
+        return SortingExercise.all.first { $0.id == exerciseID }
+    }
+    
+    var multipleChoiceExercise: MultipleChoiceExercise? {
+        guard cardTypeRaw == "MultipleCard", let exerciseID = multipleChoiceExerciseId else {return nil}
+        return MultipleChoiceExercise.all.first { $0.id == exerciseID }
     }
 }

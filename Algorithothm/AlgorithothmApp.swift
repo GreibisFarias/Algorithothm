@@ -10,6 +10,7 @@ import SwiftData
 
 @main
 struct AlgorithothmApp: App {
+    @Environment(\.modelContext) private var modelContext
     var sharedModelContainer: ModelContainer = {
             let schema = Schema([
                 FlashcardItem.self
@@ -25,7 +26,7 @@ struct AlgorithothmApp: App {
 
         var body: some Scene {
             WindowGroup {
-                AlgosHomeView()
+                AlgosHomeView(modelContext: modelContext)
             }
             .modelContainer(sharedModelContainer) // 👈 Inyecta el contenedor a todo el árbol de vistas
         }

@@ -11,86 +11,102 @@ import SwiftUI
 import SwiftData
 import SwiftFSRS
 
-
 @MainActor
 class ArchitectureStudyViewModel: ObservableObject {
-    //    @Published var cardsStrategy = FSRSStrategy()
-    @Published var currentIndex: Int = 0
-    @Published var flashcards: [flashcard] = allTheCard().allaTheCards
-    @Published var architechtureCards: [flashcard] = []
-    @Published var isFinished: Bool = false
-    private var modelContext: ModelContext
     
+    enum SessionFilter {
+        case all
+        case architecture
+        case sorting
+        case multipleChoice
+    }
+    
+    @Published var currentIndex: Int = 0
+    @Published var isFinished: Bool = false
+    @Published var activeFilter: SessionFilter = .all {
+        didSet {
+            currentIndex = 0
+            refreshActiveCards()
+        }
+    }
+    
+    @Published private(set) var activeCards: [FlashcardItem] = []
+    
+    private var modelContext: ModelContext
     private var scheduler = SchedulerType.longTerm.implementation
     private var algorithm = FSRSAlgorithm.v5
     
-    // 2. Filtramos las tarjetas que tocan HOY basadas en el due real
-    init(modelContext: ModelContext) {
+    init(modelContext: ModelContext, initialFilter: SessionFilter = .all) {
         self.modelContext = modelContext
+        self.activeFilter = initialFilter
         seedInitialDataIfNeeded()
+        refreshActiveCards()
     }
     
     private func seedInitialDataIfNeeded() {
-            let descriptor = FetchDescriptor<FlashcardItem>()
-            let count = (try? modelContext.fetchCount(descriptor)) ?? 0
-            
-            if count == 0 {
-                let dataSource = allTheCard()
-                for card in dataSource.allaTheCards {
-                    let newItem = FlashcardItem(from: card)
-                    modelContext.insert(newItem)
-                }
-                try? modelContext.save()
-                print("📦 Mazo inicial guardado exitosamente en SwiftData")
+        let descriptor = FetchDescriptor<FlashcardItem>()
+        let count = (try? modelContext.fetchCount(descriptor)) ?? 0
+        
+        if count == 0 {
+            let dataSource = allTheCard()
+            for card in dataSource.allaTheCards {
+                let newItem = FlashcardItem(from: card)
+                modelContext.insert(newItem)
             }
+            try? modelContext.save()
+            print("📦 Mazo inicial guardado exitosamente en SwiftData")
         }
+    }
     
-    /// Carga única de las tarjetas de arquitectura que tocan hoy
-    var todayArchitectureCards: [FlashcardItem] {
+    /// Carga reactiva de las tarjetas actuales según el filtro
+    func refreshActiveCards() {
         let now = Date()
+        let predicate: Predicate<FlashcardItem>
+        
+        switch activeFilter {
+        case .all:
+            predicate = #Predicate { $0.due <= now }
+        case .architecture:
+            predicate = #Predicate { $0.isArchitecture && $0.due <= now }
+        case .sorting:
+            predicate = #Predicate { $0.cardTypeRaw == "Sorting" && $0.due <= now }
+        case .multipleChoice:
+            predicate = #Predicate { $0.cardTypeRaw == "MultipleCard" && $0.due <= now }
+        }
+        
         let descriptor = FetchDescriptor<FlashcardItem>(
-            predicate: #Predicate { $0.isArchitecture && $0.due <= now },
+            predicate: predicate,
             sortBy: [SortDescriptor(\.due)]
         )
-    
-    
-    do {
-        return try modelContext.fetch(descriptor)
-    } catch {
-        print("❌ Error al obtener las tarjetas de arquitectura: \(error)")
-        return []
+        
+        activeCards = (try? modelContext.fetch(descriptor)) ?? []
+        isFinished = activeCards.isEmpty
     }
-}
     
-    
-    
-    /// Tarjeta actual dentro de la sesión de arquitectura
+    /// Tarjeta actual de la sesión en curso
     var currentCard: FlashcardItem? {
-        let cards = todayArchitectureCards
-        guard cards.indices.contains(currentIndex) else { return nil }
-        return cards[currentIndex]
+        guard activeCards.indices.contains(currentIndex) else { return nil }
+        return activeCards[currentIndex]
     }
     
     var activeArchitectureModules: [architectureModules] {
         get {
-            guard let card = currentCard else { return [] }
-            // Deserializas/recuperas los módulos según tu estructura en FlashcardItem
+            guard let card = currentCard, card.isArchitecture else { return [] }
             return card.activeModules
         }
         set {
-            if let card = currentCard {
+            if let card = currentCard, card.isArchitecture {
                 card.activeModules = newValue
-                try? modelContext.save() // Guarda la nueva conexión en SwiftData inmediatamente
+                try? modelContext.save()
             }
         }
     }
     
-    /// Procesa la calificación con FSRS y persiste en SwiftData
+    /// Procesa la calificación con FSRS y refresca la lista
     func completeCurrentCard(rating: Rating) {
         guard let cardItem = currentCard else { return }
         let now = Date()
         
-        // 1. Ejecutar el cálculo FSRS
         let reviewResult = scheduler.schedule(
             card: cardItem.fsrsCard,
             algorithm: algorithm,
@@ -98,39 +114,31 @@ class ArchitectureStudyViewModel: ObservableObject {
             reviewTime: now
         )
         
-        // 2. Persistir el resultado guardando en el ModelContext
         cardItem.fsrsCard = reviewResult.postReviewCard
         try? modelContext.save()
         
-        // 3. Evaluar el avance de la sesión
-        // Como la tarjeta procesada ya no cumplirá 'due <= now', 'todayArchitectureCards.count' disminuye automáticamente
-        if currentIndex >= todayArchitectureCards.count {
-            if todayArchitectureCards.isEmpty {
-                isFinished = true
-            } else {
-                currentIndex = 0
-            }
+        // Recargar el mazo (la tarjeta procesada ya no cumplirá 'due <= now')
+        refreshActiveCards()
+        
+        if currentIndex >= activeCards.count {
+            currentIndex = 0
         }
     }
     
     func resetSwiftData() {
         do {
-            // Borra todos los registros guardados de FlashcardItem
             try modelContext.delete(model: FlashcardItem.self)
             try modelContext.save()
             
-            // Reinicia los estados de la sesión
             currentIndex = 0
             isFinished = false
             
-            // Vuelve a poblar el mazo inicial
             seedInitialDataIfNeeded()
+            refreshActiveCards()
             
-            print("🗑️ Base de datos borrada y rellenada exitosamente.")
+            print("🗑️ Base de datos reiniciada.")
         } catch {
             print("❌ Error al resetear SwiftData: \(error)")
         }
     }
-    
 }
-
