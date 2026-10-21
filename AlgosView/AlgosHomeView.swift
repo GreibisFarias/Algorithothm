@@ -11,28 +11,29 @@ import SwiftData
 struct AlgosHomeView: View {
     @StateObject var validator = ValidationOfArch()
     @State private var isMenuOpen = false
+    @Environment(\.modelContext) private var modelContext
+    @StateObject var vmStudy: ArchitectureStudyViewModel
+    
+    init(modelContext: ModelContext){
+      _vmStudy = StateObject(wrappedValue: ArchitectureStudyViewModel(modelContext: modelContext))
 
+    }
     var body: some View {
-        ZStack {
-            NavigationStack{
+        
+        NavigationStack{
+            
+            HomeButtons(modelContext: modelContext)
+                
 
-                HomeButtons()
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            SettingsMenuButton { isMenuOpen = true }
-                        }
-                    }
-            }
-            .environmentObject(validator)
-
-            // over the NavigationStack, so it also covers the navigation bar
-            SettingsMenu(isPresented: $isMenuOpen)
         }
         // the home is light, its dark status bar text would be lost on the menu
         .statusBarHidden(isMenuOpen)
     }
 }
 #Preview {
-    AlgosHomeView()
-    
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(for: FlashcardItem.self, configurations: config)
+        
+        return AlgosHomeView(modelContext: container.mainContext)
+            .modelContainer(container)
 }

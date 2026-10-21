@@ -15,6 +15,7 @@ struct MultipleChoiceCard: View {
 
     @State private var viewModel: MultipleChoiceCardViewModel
     private let progress: String?
+    
     private let onClose: () -> Void
 
     /// - Parameters:

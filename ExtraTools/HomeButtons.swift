@@ -6,10 +6,23 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // The NavigationStack comes from AlgosHomeView, nesting another one here breaks the navigation.
 // The language is chosen in the onboarding and changed from the menu (SettingsMenu).
 struct HomeButtons: View {
+
+    @AppStorage(ProgrammingLenguages.storageKey) private var language: ProgrammingLenguages = .swift
+    @StateObject var vmStudy: ArchitectureStudyViewModel
+    @Environment(\.modelContext) private var modelContext
+    
+    init(modelContext: ModelContext){
+        _vmStudy = StateObject(wrappedValue: ArchitectureStudyViewModel(modelContext: modelContext))
+        
+    }
+
+
+
     var body: some View {
         VStack{
             NavigationLink{
@@ -32,7 +45,7 @@ struct HomeButtons: View {
             }
             HStack{
                 NavigationLink{
-                    MultipleChoiceDeck()
+                    MultipleChoiceDeck(modelContext: modelContext)
                 }label: {
                     deckButton("Predict")
                 }
@@ -67,8 +80,13 @@ struct HomeButtons: View {
 }
 
 #Preview {
-    NavigationStack {
-        HomeButtons()
-    }
-    .environmentObject(ValidationOfArch())
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(for: FlashcardItem.self, configurations: config)
+        
+        // 2. Inyectar el mainContext del contenedor
+        return NavigationStack {
+            HomeButtons(modelContext: container.mainContext)
+        }
+        .modelContainer(container) // Inyecta el contenedor en la jerarquía
+        .environmentObject(ValidationOfArch())
 }
