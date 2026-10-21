@@ -22,7 +22,7 @@ struct AlgosHomeView: View {
             NavigationStack{
                 
                 HomeButtons(modelContext: modelContext)
-    
+                    .toolbar
                 
             }
             // the home is light, its dark status bar text would be lost on the menu
