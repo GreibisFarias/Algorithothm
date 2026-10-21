@@ -15,27 +15,37 @@ struct AlgosHomeView: View {
     @StateObject var vmStudy: ArchitectureStudyViewModel
     
     init(modelContext: ModelContext){
-      _vmStudy = StateObject(wrappedValue: ArchitectureStudyViewModel(modelContext: modelContext))
+        _vmStudy = StateObject(wrappedValue: ArchitectureStudyViewModel(modelContext: modelContext))
     }
     var body: some View {
         ZStack{
+            
             NavigationStack{
                 
                 HomeButtons(modelContext: modelContext)
-                    .toolbar
-                
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background{
+                        RetroBackground()
+                            .ignoresSafeArea()
+                    }
+                    .toolbar{
+                        ToolbarItem(placement: .topBarLeading) {
+                            SettingsMenuButton { isMenuOpen = true }
+                        }
+                    }
             }
+            
             // the home is light, its dark status bar text would be lost on the menu
             SettingsMenu(isPresented: $isMenuOpen)
         }
         .statusBarHidden(isMenuOpen)
     }
-        
+    
 }
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try! ModelContainer(for: FlashcardItem.self, configurations: config)
-        
-        return AlgosHomeView(modelContext: container.mainContext)
-            .modelContainer(container)
+    let container = try! ModelContainer(for: FlashcardItem.self, configurations: config)
+    
+    return AlgosHomeView(modelContext: container.mainContext)
+        .modelContainer(container)
 }

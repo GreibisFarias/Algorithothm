@@ -13,6 +13,7 @@ import SwiftUI
 struct SortingInteractionCard: View {
 
     @State private var viewModel: SortingCardViewModel
+    @ObservedObject var vmStudy: ArchitectureStudyViewModel
     private let progress: String?
     private let onClose: () -> Void
 
@@ -29,11 +30,13 @@ struct SortingInteractionCard: View {
         language: ProgrammingLenguages,
         progress: String? = nil,
         onRate: @escaping (ExerciseDifficulty) -> Void = { _ in },
-        onClose: @escaping () -> Void = {}
+        onClose: @escaping () -> Void = {},
+        vmStudy: ArchitectureStudyViewModel
     ) {
         _viewModel = State(initialValue: SortingCardViewModel(exercise: exercise, language: language, onRate: onRate))
         self.progress = progress
         self.onClose = onClose
+        self.vmStudy = vmStudy
     }
 
     var body: some View {
@@ -67,7 +70,7 @@ struct SortingInteractionCard: View {
             }
 
             if viewModel.phase == .feedback {
-                RetroResultView(theme: .aprendeYArma, summary: viewModel.resultSummary, onRate: rate, onClose: onClose)
+                FeedBackView(studyVM: vmStudy)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
@@ -164,14 +167,14 @@ private struct CardFace: ViewModifier, Animatable {
     }
 }
 
-#Preview("Filtrar pares · Swift") {
-    SortingInteractionCard(exercise: .evenWords, language: .swift, progress: "1/10")
-}
-
-#Preview("FizzBuzz · Python") {
-    SortingInteractionCard(exercise: .fizzBuzz, language: .python, progress: "5/10")
-}
-
-#Preview("Dos sumas · Java") {
-    SortingInteractionCard(exercise: .twoSum, language: .java, progress: "7/10")
-}
+//#Preview("Filtrar pares · Swift") {
+//    SortingInteractionCard(exercise: .evenWords, language: .swift, progress: "1/10")
+//}
+//
+//#Preview("FizzBuzz · Python") {
+//    SortingInteractionCard(exercise: .fizzBuzz, language: .python, progress: "5/10")
+//}
+//
+//#Preview("Dos sumas · Java") {
+//    SortingInteractionCard(exercise: .twoSum, language: .java, progress: "7/10")
+//}

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SortingDeck: View {
+    @StateObject var vmStudy: ArchitectureStudyViewModel
     var body: some View {
         RetroDeck(exercises: SortingExercise.all, theme: .aprendeYArma) { exercise, deck in
             SortingInteractionCard(
@@ -15,14 +16,14 @@ struct SortingDeck: View {
                 language: deck.language,
                 progress: deck.progress,
                 onRate: deck.onRate,
-                onClose: deck.onClose
+                onClose: deck.onClose, vmStudy: vmStudy
             )
         }
     }
 }
-
-#Preview {
-    NavigationStack {
-        SortingDeck()
-    }
-}
+//
+//#Preview {
+//    NavigationStack {
+//        SortingDeck(vmStudy: <#ArchitectureStudyViewModel#>)
+//    }
+//}

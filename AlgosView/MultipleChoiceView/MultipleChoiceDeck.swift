@@ -52,7 +52,7 @@ struct MultipleChoiceDeck: View {
                         onClose: {
                             deck.onClose()
                             dismiss()
-                        }
+                        }, vmStudyy: vmStudy
                     )
                     .sheet(isPresented: $showFeedbackSheet) {
                         FeedBackView(studyVM: vmStudy)

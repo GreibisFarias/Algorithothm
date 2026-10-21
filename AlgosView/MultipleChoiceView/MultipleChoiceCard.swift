@@ -16,6 +16,8 @@ struct MultipleChoiceCard: View {
     @State private var viewModel: MultipleChoiceCardViewModel
     private let progress: String?
     
+    @ObservedObject var vmStudyy: ArchitectureStudyViewModel
+    
     private let onClose: () -> Void
 
     /// - Parameters:
@@ -26,11 +28,13 @@ struct MultipleChoiceCard: View {
         language: ProgrammingLenguages,
         progress: String? = nil,
         onRate: @escaping (ExerciseDifficulty) -> Void = { _ in },
-        onClose: @escaping () -> Void = {}
+        onClose: @escaping () -> Void = {},
+        vmStudyy: ArchitectureStudyViewModel
     ) {
         _viewModel = State(initialValue: MultipleChoiceCardViewModel(exercise: exercise, language: language, onRate: onRate))
         self.progress = progress
         self.onClose = onClose
+        self.vmStudyy = vmStudyy
     }
 
     var body: some View {
@@ -88,7 +92,7 @@ struct MultipleChoiceCard: View {
             .padding(.top, 12)
 
             if viewModel.phase == .feedback {
-                RetroResultView(theme: .predice, summary: viewModel.resultSummary, onRate: rate, onClose: onClose)
+               FeedBackView(studyVM: vmStudyy)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
@@ -161,14 +165,14 @@ struct MultipleChoiceCard: View {
     }
 }
 
-#Preview("Duplicar todos · Swift") {
-    MultipleChoiceCard(exercise: .doubleAll, language: .swift, progress: "1/10")
-}
-
-#Preview("Suma de dígitos · Python") {
-    MultipleChoiceCard(exercise: .digitSum, language: .python, progress: "7/10")
-}
-
-#Preview("Búsqueda binaria · Java") {
-    MultipleChoiceCard(exercise: .binarySearch, language: .java, progress: "10/10")
-}
+//#Preview("Duplicar todos · Swift") {
+//    MultipleChoiceCard(exercise: .doubleAll, language: .swift, progress: "1/10", vmStudyy: ArchitectureStudyViewModel())
+//}
+//
+//#Preview("Suma de dígitos · Python") {
+//    MultipleChoiceCard(exercise: .digitSum, language: .python, progress: "7/10", vmStudyy: ArchitectureStudyViewModel())
+//}
+//
+//#Preview("Búsqueda binaria · Java") {
+//    MultipleChoiceCard(exercise: .binarySearch, language: .java, progress: "10/10", vmStudyy: ArchitectureStudyViewModel)
+//}
