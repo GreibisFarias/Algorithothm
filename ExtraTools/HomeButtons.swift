@@ -10,6 +10,7 @@ import SwiftData
 
 // The NavigationStack comes from AlgosHomeView, nesting another one here breaks the navigation.
 struct HomeButtons: View {
+
     @AppStorage(ProgrammingLenguages.storageKey) private var language: ProgrammingLenguages = .swift
     @StateObject var vmStudy: ArchitectureStudyViewModel
     @Environment(\.modelContext) private var modelContext
@@ -18,6 +19,7 @@ struct HomeButtons: View {
         _vmStudy = StateObject(wrappedValue: ArchitectureStudyViewModel(modelContext: modelContext))
         
     }
+
 
     var body: some View {
         VStack{
