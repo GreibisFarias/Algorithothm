@@ -58,7 +58,6 @@ struct RetroIconButton: View {
         Button(action: action) {
             PixelIcon(pixels: pixels, color: Retro.text)
                 .frame(width: 20, height: 20)
-                .frame(width: 44, height: 44)
                 .background(Retro.panel)
                 .overlay { Rectangle().strokeBorder(Retro.panelStroke, lineWidth: 2) }
         }
@@ -66,3 +65,5 @@ struct RetroIconButton: View {
         .accessibilityLabel(accessibilityLabel)
     }
 }
+
+
