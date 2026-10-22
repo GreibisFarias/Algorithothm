@@ -3,5 +3,7 @@ se espera en un futuro poder cobrarla con estudiantes reales para tener un resgu
 por los momentos basta aclarar que este proyecto, tiene una base teórica estructural, basada en estudios psicológicos pedagógicos de como optimizar el aprendizaje, siendo la principal teoria
 que da cuerpo al proyecto, la teoría de la carga cognitiva del reconocido psicólogo John Sweller.
 
+<img width="696" height="299" alt="Captura de pantalla 2026-10-22 a la(s) 12 01 46 p  m" src="https://github.com/user-attachments/assets/04f7d80f-135a-4eb9-adb2-5fcbfc72a61d" />
+
 
 Si quiere saber mas del proyecto sea bienvenido a consultar la tesina de su desarrollo en el siguiente enlace
