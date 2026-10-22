@@ -200,6 +200,7 @@ struct PixelIcon2: View {
     let rects: [PixelRect]
     var tint: Color
     var size: CGFloat = 44
+    var grid: CGFloat
     
     var body: some View {
         Canvas { ctx, canvasSize in
@@ -310,7 +311,7 @@ struct HomeTileCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PixelIcon2(rects: tile.icon, tint: tile.accent, size: tile.iconSize)
+            PixelIcon2(rects: tile.icon, tint: tile.accent, size: tile.iconSize, grid: 8)
             Spacer(minLength: 8)
             VStack(alignment: .leading, spacing: 4) {
                 Text(tile.label)
@@ -435,7 +436,7 @@ struct MixScreenContent: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            PixelIcon2(rects: PixelIcons.mix, tint: Pixel.green, size: 56)
+            PixelIcon2(rects: PixelIcons.mix, tint: Pixel.green, size: 56, grid: 16)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(title)
