@@ -10,4 +10,4 @@ Se adjutan las siguientes imágenes, que muestran el ciclo principal de la aplic
 
 Si quiere saber mas del proyecto sea bienvenido a consultar la tesina de su desarrollo en el siguiente enlace: 
 
-https://drive.google.com/file/d/1Am_8IgLOTpEbUeiQd7GYiEf_7H0oRzG_/view?usp=share_link
+https://drive.google.com/file/d/1k1lXR5esKOyZdecqsh2CIezspD8KC94p/view?usp=share_link
